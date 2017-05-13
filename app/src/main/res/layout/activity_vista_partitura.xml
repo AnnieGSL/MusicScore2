@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_vista_partitura"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.annie.musicscore.VistaPartitura">
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <!--    android:layout_toLeftOf="@+id/scrollBar"-->
+
+    <!--<com.github.barteksc.pdfviewer.ScrollBar
+        android:id="@+id/scrollBar"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:scrollbarSize="5dp"
+        android:layout_width="8dp" /> -->
+
+</RelativeLayout>

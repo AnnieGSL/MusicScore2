@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_principal"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Principal" />
+        <item
+            android:id="@+id/nav_cuenta"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Perfil" />
+        <item
+            android:id="@+id/nav_partituras"
+            android:icon="@drawable/ic_favorite_black_24dp"
+            android:title="Mis Partituras" />
+        <item
+            android:id="@+id/nav_alumnos"
+            android:icon="@drawable/ic_supervisor_account_black_24dp"
+            android:title="Mis Alumnos" />
+    </group>
+
+    <item android:title="Extras">
+        <menu>
+            <item
+                android:id="@+id/nav_sesion"
+                android:title="Cerrar Sesión" />
+            <item
+                android:id="@+id/nav_info"
+                android:title="Acerca de" />
+        </menu>
+    </item>
+
+</menu>
+

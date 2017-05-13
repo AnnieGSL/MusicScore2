@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/obs"
+        android:orderInCategory="100"
+        android:title="Observaciones"
+        />
+    <item
+        android:id="@+id/prg"
+        android:orderInCategory="101"
+        android:title="Progreso"
+        />
+    <item
+        android:id="@+id/msj"
+        android:orderInCategory="101"
+        android:title="Mensaje"
+        />
+
+</menu>
