@@ -24,7 +24,8 @@ import java.util.Map;
 
 public class Registration extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
-    private static final String URL_FOR_REGISTRATION = "http://192.168.1.8/MusicScore/Register.php";
+    //private static final String URL_FOR_REGISTRATION = "http://192.168.1.8/MusicScore/Register.php";
+    private static final String URL_FOR_REGISTRATION = "http://musictesis.esy.es/Register.php";
     ProgressDialog pDialog;
 
     private EditText etAge;

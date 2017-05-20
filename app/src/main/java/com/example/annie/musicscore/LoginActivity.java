@@ -30,7 +30,8 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
     // UI references.
     private static final String TAG = "LoginActivity";
-    private static final String URL_FOR_LOGIN = "http://192.168.1.8/MusicScore/Login.php";
+    //private static final String URL_FOR_LOGIN = "http://192.168.1.8/MusicScore/Login.php";
+    private static final String URL_FOR_LOGIN = "http://musictesis.esy.es/Login.php";
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private Button mEmailSignInButton;
@@ -76,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             JSONObject jObj = new JSONObject(response);
                             boolean error = jObj.getBoolean("error");
+                            Toast.makeText(getApplicationContext(), "try", Toast.LENGTH_LONG).show();
 
                             // Check for error node in json
                             if (!error) {

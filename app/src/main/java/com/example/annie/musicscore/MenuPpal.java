@@ -3,10 +3,9 @@ package com.example.annie.musicscore;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +22,7 @@ public class MenuPpal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private EditText et;
     private TextView titulo, notas, sol, silencio, acorde, penta, otro;
-    private String perfil;
+    private String name, username, perfil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,11 @@ public class MenuPpal extends AppCompatActivity
         acorde = (TextView)findViewById(R.id.acorde);
         penta = (TextView)findViewById(R.id.penta);
         otro = (TextView)findViewById(R.id.otro);
+
+        Bundle bundle = getIntent().getExtras();
+        name = bundle.getString("nombre");
+        username = bundle.getString("correo");
+        perfil = bundle.getString("perfil"); //INVESTIGAR RESTRICCION
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,11 +67,6 @@ public class MenuPpal extends AppCompatActivity
         TextView nUsuario = (TextView)navHeader.findViewById(R.id.Nombre);
         TextView cUsuario = (TextView)navHeader.findViewById(R.id.Correo) ;
 
-        Bundle bundle = getIntent().getExtras();
-        String name = bundle.getString("name");
-        String username = bundle.getString("username");
-        perfil = bundle.getString("perfil"); //INVESTIGAR RESTRICCION
-
         nUsuario.setText(name);
         cUsuario.setText(username);
 
@@ -87,7 +87,12 @@ public class MenuPpal extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_ppal, menu);
+        if(perfil.equals("Profesor")){
+            getMenuInflater().inflate(R.menu.menu_ppal, menu);
+        }
+        if(perfil.equals("Alumno")){
+            getMenuInflater().inflate(R.menu.principal, menu);
+        }
         return true;
     }
 
@@ -122,14 +127,15 @@ public class MenuPpal extends AppCompatActivity
             Partituras partitura = new Partituras();
             fm.beginTransaction().replace(R.id.content_frame, partitura).commit();
             //Toast.makeText(this, "Partitura Almacenada", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_favoritos) {
-            Toast.makeText(this, "Lista de Favoritas", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_mensajes) {
+            Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_alumnos) {
             Alumnos almno = new Alumnos();
             fm.beginTransaction().replace(R.id.content_frame, almno).commit();
             //Toast.makeText(this, "Lista de Alumnos", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_sesion) {
-
+            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_info) {
             AcercaDe acerca = new AcercaDe();
             fm.beginTransaction().replace(R.id.content_frame, acerca).commit();
