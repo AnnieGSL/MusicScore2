@@ -72,12 +72,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d(TAG, "Login Response: " + response.toString());
                         hideDialog();
-                        //Toast.makeText(getApplicationContext(), "onrespose", Toast.LENGTH_LONG).show();
 
                         try {
                             JSONObject jObj = new JSONObject(response);
                             boolean error = jObj.getBoolean("error");
-                            Toast.makeText(getApplicationContext(), "try", Toast.LENGTH_LONG).show();
+
 
                             // Check for error node in json
                             if (!error) {
@@ -85,14 +84,12 @@ public class LoginActivity extends AppCompatActivity {
                                 String name = jObj.getJSONObject("user").getString("name");
                                 String user = jObj.getJSONObject("user").getString("username");
                                 String perf = jObj.getJSONObject("user").getString("perfil");
-                                //Toast.makeText(getApplicationContext(), name, Toast.LENGTH_LONG).show();
                                 // Launch main activity
                                 Intent intent = new Intent(LoginActivity.this, UserArea.class);
                                 intent.putExtra("name",name);
                                 intent.putExtra("username",user);
                                 intent.putExtra("perfil",perf);
                                 LoginActivity.this.startActivity(intent);
-                                //Toast.makeText(getApplicationContext(), user, Toast.LENGTH_LONG).show();
                                 finish();
                             } else {
                                 // Error in login. Get the error message

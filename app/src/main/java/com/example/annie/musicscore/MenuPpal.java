@@ -87,12 +87,7 @@ public class MenuPpal extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(perfil.equals("Profesor")){
-            getMenuInflater().inflate(R.menu.menu_ppal, menu);
-        }
-        if(perfil.equals("Alumno")){
-            getMenuInflater().inflate(R.menu.principal, menu);
-        }
+        getMenuInflater().inflate(R.menu.menu_ppal, menu);
         return true;
     }
 
