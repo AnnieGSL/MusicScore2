@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class creaObservacion extends AppCompatActivity {
     RecyclerView recyclerView;
-    busqAdapter adapter; //CAMBIAR, CREAR ADAPTADOR PARA QYE LEA BASE DE DATOS MYSQL
+    partAdapter adapter; //CAMBIAR, CREAR ADAPTADOR PARA QYE LEA BASE DE DATOS MYSQL
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -28,7 +28,7 @@ public class creaObservacion extends AppCompatActivity {
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_36dp);
 
         recyclerView = (RecyclerView)findViewById(R.id.rvItem);
-        adapter = new busqAdapter(this, getPDFs());
+        adapter = new partAdapter(this, getPDFs());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);

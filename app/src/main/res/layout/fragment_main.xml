@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.annie.mm.main"
+    tools:context="com.example.annie.musicscore.main"
     android:background="@android:color/background_light">
     <ScrollView
         android:layout_width="match_parent"

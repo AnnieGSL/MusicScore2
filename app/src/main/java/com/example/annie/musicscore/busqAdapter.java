@@ -2,7 +2,6 @@ package com.example.annie.musicscore;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,10 @@ import java.util.ArrayList;
 
 public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<Datos_simple> itemList;
+    private ArrayList<Datos_url> itemList = new ArrayList<Datos_url>();
     LayoutInflater inflater;
 
-    public busqAdapter(Context context, ArrayList<Datos_simple> itemList){
+    public busqAdapter(Context context, ArrayList<Datos_url> itemList){
         this.context = context;
         this.itemList = itemList;
         inflater = LayoutInflater.from(context);
@@ -35,11 +34,11 @@ public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
-        final Datos_simple pdfDoc = itemList.get(position);
+        final Datos_url pdfDoc = itemList.get(position);
         myViewHolder.textView.setText(pdfDoc.getName());
         myViewHolder.setItemClickListener(new ItemClickListener(){
             public void onItemClick(int pos){
-                openPDFView(pdfDoc.getPath());
+                openPDFView(pdfDoc.getUrl());
             }
         });
     }
@@ -59,7 +58,7 @@ public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView textView;
         ItemClickListener itemClickListener;
-        public MyViewHolder(View itemView, Context context, ArrayList<Datos_simple> itemList){
+        public MyViewHolder(View itemView, Context context, ArrayList<Datos_url> itemList){
             super(itemView);
             itemView.setOnClickListener(this);
             textView =(TextView)itemView.findViewById(R.id.tv_row);
