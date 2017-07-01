@@ -47,7 +47,7 @@ public class creaObservacion extends AppCompatActivity {
                 if(file.getPath().endsWith("pdf")){
                     pdfDoc = new Datos_simple();
                     pdfDoc.setName(file.getName());
-                    pdfDoc.setPath(file.getAbsolutePath());
+                    pdfDoc.setUrl(file.getAbsolutePath());
                     pdfDocs.add(pdfDoc);
                 }
             }

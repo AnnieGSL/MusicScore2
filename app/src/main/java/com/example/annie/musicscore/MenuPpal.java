@@ -2,12 +2,14 @@ package com.example.annie.musicscore;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,31 +18,36 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MenuPpal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
-    private EditText et;
+
     private TextView titulo, notas, sol, silencio, acorde, penta, otro;
     private String name, username, perfil;
-    private Button buscar;
+
     private static final String TAG = "Busqueda";
-    private static final String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php?filtro=";
+    private static final String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
 
     private ProgressDialog pDialog;
 
@@ -55,7 +62,7 @@ public class MenuPpal extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        et = (EditText)findViewById(R.id.et);
+
         titulo = (TextView)findViewById(R.id.titulo);
         notas = (TextView)findViewById(R.id.notas);
         sol = (TextView)findViewById(R.id.sol);
@@ -63,20 +70,13 @@ public class MenuPpal extends AppCompatActivity
         acorde = (TextView)findViewById(R.id.acorde);
         penta = (TextView)findViewById(R.id.penta);
         otro = (TextView)findViewById(R.id.otro);
-        buscar = (Button)findViewById(R.id.button);
 
 
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString("nombre");
         username = bundle.getString("correo");
         perfil = bundle.getString("perfil"); //INVESTIGAR RESTRICCION
-/*
-        buscar.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                new AsyncFilt().execute();
-            }
-        });
-*/
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +104,11 @@ public class MenuPpal extends AppCompatActivity
         cUsuario.setText(username);
 
         FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
+        FragmentTransaction ft = fm.beginTransaction();
+        main m = new main();
+        ft.add(R.id.content_frame, m);
+        ft.commit();
+        //fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
     }
 
     @Override
@@ -176,17 +180,16 @@ public class MenuPpal extends AppCompatActivity
     }
 
     public void buscar (View view) {
-        new AsyncFilt().execute();
+        EditText et = (EditText)findViewById(R.id.et);
+        String filtro = et.getText().toString();
+        new AsyncFilt().execute(filtro);
     }
 
 
     private class AsyncFilt extends AsyncTask<String, String, String>{
-            ProgressDialog pdLoading = new ProgressDialog(MenuPpal.this);
+        ProgressDialog pdLoading = new ProgressDialog(MenuPpal.this);
             HttpURLConnection con;
             URL url = null;
-            //final String filtro = et.getText().toString();
-            String filtro = "Hello";
-
 
         @Override
             protected void onPreExecute() {
@@ -199,8 +202,7 @@ public class MenuPpal extends AppCompatActivity
             @Override
             protected String doInBackground(String... params) {
                 try {
-                    url = new URL(URL_FOR_FILTRO+filtro);
-                    Toast.makeText(MenuPpal.this, "filtro:"+url, Toast.LENGTH_LONG).show();
+                    url = new URL(URL_FOR_FILTRO);
 
                 }catch(MalformedURLException e){
                     e.printStackTrace();
@@ -210,8 +212,22 @@ public class MenuPpal extends AppCompatActivity
                     con = (HttpURLConnection) url.openConnection();
                     con.setReadTimeout(READ_TIMEOUT);
                     con.setConnectTimeout(CONNECTION_TIMEOUT);
-                    con.setRequestMethod("GET");
+                    con.setRequestMethod("POST");
+                    con.setDoInput(true);
                     con.setDoOutput(true);
+
+                    Uri.Builder builder = new Uri.Builder().appendQueryParameter("filtro",params[0]);
+                    String query = builder.build().getEncodedQuery();
+
+
+                    OutputStream os = con.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    writer.write(query);
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                    con.connect();
+
                 }catch (IOException e1){
                     e1.printStackTrace();
                     return e1.toString();
@@ -241,7 +257,6 @@ public class MenuPpal extends AppCompatActivity
             @Override
             protected void onPostExecute(String sb) {
                 pdLoading.dismiss();
-                Toast.makeText(MenuPpal.this, "sb"+sb, Toast.LENGTH_LONG).show();
 
                 try{
                     //Toast.makeText(MenuPpal.this, "sb:"+sb, Toast.LENGTH_LONG).show();
@@ -251,20 +266,34 @@ public class MenuPpal extends AppCompatActivity
                     if (!error) {
                         JSONArray jArray = jObj.getJSONArray("partitura");
                         //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
-
+                        ArrayList<Datos_simple> info= new ArrayList<Datos_simple>();
                         // Extract data from json and store into ArrayList as class objects
                         for (int i = 0; i < jArray.length(); i++) {
+                            Datos_simple dato = new Datos_simple();
                             JSONObject part_data = jArray.getJSONObject(i);
-
                             String name = part_data.getString("name");
                             String url = part_data.getString("url");
-
-                            Intent intent = new Intent(MenuPpal.this, Busqueda.class);
-                            intent.putExtra("name", name);
-                            intent.putExtra("url", url);
-                            MenuPpal.this.startActivity(intent);
-                            finish();
+                            String id = part_data.getString("id");
+                            //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                            dato.setName(name);
+                            dato.setUrl(url);
+                            dato.setId(id);
+                            dato.setCorreo(username);
+                            //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
+                            info.add(dato);
+                            //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
                         }
+                        Gson gson = new Gson();
+                        //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
+                        String datosJson = gson.toJson(info);
+                        //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(MenuPpal.this, Busqueda.class);
+                        intent.putExtra("Datos",datosJson);
+                        intent.putExtra("nombre", name);
+                        intent.putExtra("username", username);
+                        MenuPpal.this.startActivity(intent);
+                        finish();
+
                     }else {
                         // Error in login. Get the error message
                         String errorMsg = jObj.getString("error_msg");

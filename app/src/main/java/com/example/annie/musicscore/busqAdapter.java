@@ -16,10 +16,10 @@ import java.util.ArrayList;
 
 public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<Datos_url> itemList = new ArrayList<Datos_url>();
+    private ArrayList<Datos_simple> itemList = new ArrayList<Datos_simple>();
     LayoutInflater inflater;
 
-    public busqAdapter(Context context, ArrayList<Datos_url> itemList){
+    public busqAdapter(Context context, ArrayList<Datos_simple> itemList){
         this.context = context;
         this.itemList = itemList;
         inflater = LayoutInflater.from(context);
@@ -34,19 +34,21 @@ public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder myViewHolder, int position) {
-        final Datos_url pdfDoc = itemList.get(position);
+        final Datos_simple pdfDoc = itemList.get(position);
         myViewHolder.textView.setText(pdfDoc.getName());
         myViewHolder.setItemClickListener(new ItemClickListener(){
             public void onItemClick(int pos){
-                openPDFView(pdfDoc.getUrl());
+                openPDFView(pdfDoc.getUrl(),pdfDoc.getId(), pdfDoc.getCorreo());
             }
         });
     }
     //llama al activity de vista partitura
 
-    private void openPDFView(String path) {
+    private void openPDFView(String path, String id, String user) {
         Intent intent = new Intent(this.context, VistaPartitura.class);
         intent.putExtra("PATH",path);
+        intent.putExtra("ID",id);
+        intent.putExtra("USER", user);
         this.context.startActivity(intent);
     }
 
@@ -58,7 +60,7 @@ public class busqAdapter extends RecyclerView.Adapter<busqAdapter.MyViewHolder> 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView textView;
         ItemClickListener itemClickListener;
-        public MyViewHolder(View itemView, Context context, ArrayList<Datos_url> itemList){
+        public MyViewHolder(View itemView, Context context, ArrayList<Datos_simple> itemList){
             super(itemView);
             itemView.setOnClickListener(this);
             textView =(TextView)itemView.findViewById(R.id.tv_row);

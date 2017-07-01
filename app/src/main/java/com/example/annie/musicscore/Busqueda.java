@@ -1,5 +1,6 @@
 package com.example.annie.musicscore;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -7,18 +8,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class Busqueda extends AppCompatActivity {
     /*Administra el activity que contiene la lista de busqueda*/
-    private static final String TAG = "Busqueda";
-    //private static final String URL_FOR_LOGIN = "http://192.168.1.8/MusicScore/Login.php";
-    private static final String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
 
-    ArrayList<Datos_url> pdfDocs = new ArrayList<Datos_url>();
+    ArrayList<Datos_simple> pdfDocs = new ArrayList<Datos_simple>();
     RecyclerView recyclerView;
     busqAdapter adapter;
-    String name, url;
+    String nombre, correo, info;
+    ArrayList<Datos_simple> array = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,30 +35,35 @@ public class Busqueda extends AppCompatActivity {
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_36dp);
 
         Bundle bundle = getIntent().getExtras();
-        name = bundle.getString("name");
-        url = bundle.getString("url");
+        Gson gson = new Gson();
+        info = bundle.getString("Datos");
+        nombre = bundle.getString("nombre");
+        correo = bundle.getString("username");
+        Type type = new TypeToken<ArrayList<Datos_simple>>(){}.getType();
+        array = gson.fromJson(info, type);
 
-        Datos_url pdfDoc = new Datos_url();
-        pdfDoc.setName(name);
-        pdfDoc.setUrl(url);
-        pdfDocs.add(pdfDoc);
+       // Datos_url pdfDoc = new Datos_url();
+       // pdfDoc.setName(name);
+       // pdfDoc.setUrl(url);
+       // pdfDocs.add(pdfDoc);
 
         //aqui se define el recyclerView del xml
         recyclerView = (RecyclerView)findViewById(R.id.rvItem);
-        adapter = new busqAdapter(Busqueda.this, pdfDocs);
+        adapter = new busqAdapter(Busqueda.this, array);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(Busqueda.this));
         recyclerView.setHasFixedSize(true);
-        //aqui se define el adaptador que une la informacion que se mostrará contenida en Datos.java
-        //con el recyclerView y la disposición que tendrá, en esta caso LinearLayout
-
-
     }
 
     public boolean onOptionsItemSelected(MenuItem itm){
         switch (itm.getItemId()){
             case android.R.id.home:
-                onBackPressed();
+                //onBackPressed();
+                Intent intent = new Intent(Busqueda.this, MenuPpal.class);
+                intent.putExtra("nombre", nombre);
+                intent.putExtra("correo", correo);
+                Busqueda.this.startActivity(intent);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(itm);

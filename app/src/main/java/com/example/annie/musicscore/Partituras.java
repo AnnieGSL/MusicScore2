@@ -46,7 +46,7 @@ public class Partituras extends Fragment {
                 if(file.getPath().endsWith("pdf")){
                     pdfDoc = new Datos_simple();
                     pdfDoc.setName(file.getName());
-                    pdfDoc.setPath(file.getAbsolutePath());
+                    pdfDoc.setUrl(file.getAbsolutePath());
                     pdfDocs.add(pdfDoc);
                 }
             }

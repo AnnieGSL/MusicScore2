@@ -1,6 +1,5 @@
 package com.example.annie.musicscore;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +25,6 @@ public class partAdapter extends RecyclerView.Adapter<partAdapter.MyViewHolder> 
         inflater = LayoutInflater.from(context);
     }
 
-
     @Override
     public partAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         View view = inflater.inflate(R.layout.busq_item, parent,false);
@@ -40,7 +38,7 @@ public class partAdapter extends RecyclerView.Adapter<partAdapter.MyViewHolder> 
         myViewHolder.textView.setText(pdfDoc.getName());
         myViewHolder.setItemClickListener(new partAdapter.ItemClickListener(){
             public void onItemClick(int pos){
-                openPDFView(pdfDoc.getPath());
+                openPDFView(pdfDoc.getUrl());
             }
         });
     }
