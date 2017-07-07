@@ -1,38 +1,46 @@
 package com.example.annie.musicscore;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.github.barteksc.pdfviewer.PDFView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VistaPartitura extends AppCompatActivity {
     PDFView pdfView;
-    String id, correo;
+    String id, correo, path;
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
+    private static final String URL_FOR_INSERT = "http://musictesis.esy.es/addFav.php";
+    private static final String TAG = "VistaPartitura";
+    private ProgressDialog pDialog;
+    DownloadManager downloadManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +58,9 @@ public class VistaPartitura extends AppCompatActivity {
         //pdfView.setScrollBar(scrollBar);
         //scrollBar.setHorizontal(false);
         Intent intent=this.getIntent();
-        String path = intent.getExtras().getString("PATH");
+        path = intent.getExtras().getString("PATH");
         id = intent.getExtras().getString("ID");
         correo = intent.getExtras().getString("USER");
-        Toast.makeText(this, "id: "+id+" correo: "+correo, Toast.LENGTH_SHORT).show();
         new RetrievePDFStream().execute(path);
 
         //Modalidad para leer desde almacenamiento del movil
@@ -76,10 +83,11 @@ public class VistaPartitura extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.agregar_partitura:
-                new AsyncFilt().execute(id, correo);
+                insertDatos();
                 return true;
             case R.id.descargar_partitura:
                 Toast.makeText(VistaPartitura.this, "Iniciando Descarga", Toast.LENGTH_LONG).show();
+                descargar(path);
                 return true;
             case R.id.registrar_progreso:
                 Intent i = new Intent(this, progresoAlm.class);
@@ -118,94 +126,77 @@ public class VistaPartitura extends AppCompatActivity {
         }
     }
 
-    private class AsyncFilt extends AsyncTask<String, String, String>{
-        ProgressDialog pdLoading = new ProgressDialog(VistaPartitura.this);
-        HttpURLConnection con;
-        URL url = null;
+    private void insertDatos(){
+        String cancel_req_tag = "vista";
+        //pDialog.setMessage("Cargando...");
+        //showDialog();
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-        }
+        StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_INSERT, new Response.Listener<String>() {
 
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                url = new URL("http://musictesis.esy.es/addFav.php");
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Login Response: " + response.toString());
+                //hideDialog();
 
-            }catch(MalformedURLException e){
-                e.printStackTrace();
-                return e.toString();
-            }
-            try{
-                con = (HttpURLConnection) url.openConnection();
-                con.setReadTimeout(READ_TIMEOUT);
-                con.setConnectTimeout(CONNECTION_TIMEOUT);
-                con.setRequestMethod("POST");
-                con.setDoInput(true);
-                con.setDoOutput(true);
-
-                Uri.Builder builder = new Uri.Builder().appendQueryParameter("id",params[0]).appendQueryParameter("correo", params[1]);
-                String query = builder.build().getEncodedQuery();
-
-                OutputStream os = con.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                con.connect();
-
-            }catch (IOException e1){
-                e1.printStackTrace();
-                return e1.toString();
-            }
-            try{
-                int response_code = con.getResponseCode();
-                if(response_code == HttpURLConnection.HTTP_OK){
-                    InputStream input = con.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder sb = new StringBuilder();
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
+                    // Check for error node in json
+                    if (!error) {
+                        String user = jObj.getString("nombre");
+                        Toast.makeText(getApplicationContext(), user +",fue agregada exitosamente", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
                     }
-                    return (sb.toString());
-                }else{
-                    return ("unsuccessful");
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-            }catch (IOException e){
-                e.printStackTrace();
-                return e.toString();
-            }finally{
-                con.disconnect();
             }
-        }
-        @Override
-        protected void onPostExecute(String sb) {
-            pdLoading.dismiss();
+        }, new Response.ErrorListener() {
 
-            try{
-                Toast.makeText(VistaPartitura.this, "sb:"+sb, Toast.LENGTH_LONG).show();
-                JSONObject jObj = new JSONObject(sb);
-                boolean error = jObj.getBoolean("error");
-
-                if (!error) {
-                    Toast.makeText(VistaPartitura.this, "Partitura en favoritos", Toast.LENGTH_LONG).show();
-                }else {
-                    // Error in login. Get the error message
-                    String errorMsg = jObj.getString("error_msg");
-                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
-                }
-
-                // Setup and Handover data to recyclerview
-            }catch (JSONException e) {
-                Toast.makeText(VistaPartitura.this, e.toString(), Toast.LENGTH_LONG).show();
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
             }
-        }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("fk_user", correo);
+                params.put("fk_score", id);
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
+    }
+
+    private void descargar(String path){
+        downloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(path);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        Long reference = downloadManager.enqueue(request);
+    }
+
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 }

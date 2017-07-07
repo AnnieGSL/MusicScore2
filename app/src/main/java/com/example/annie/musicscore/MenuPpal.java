@@ -48,6 +48,7 @@ public class MenuPpal extends AppCompatActivity
 
     private static final String TAG = "Busqueda";
     private static final String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
+    private static final String URL_FOR_PART = "http://musictesis.esy.es/getPdfs(json).php";
 
     private ProgressDialog pDialog;
 
@@ -156,8 +157,10 @@ public class MenuPpal extends AppCompatActivity
             fm.beginTransaction().replace(R.id.content_frame, perfil).commit();
             //Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show();
         }else if (id == R.id.nav_partituras){
-            Partituras partitura = new Partituras();
-            fm.beginTransaction().replace(R.id.content_frame, partitura).commit();
+            String filtro = username;
+            new AsyncFiltr().execute(filtro);
+            //Partituras partitura = new Partituras();
+            //fm.beginTransaction().replace(R.id.content_frame, partitura).commit();
             //Toast.makeText(this, "Partitura Almacenada", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_mensajes) {
             Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
@@ -305,6 +308,127 @@ public class MenuPpal extends AppCompatActivity
                     Toast.makeText(MenuPpal.this, e.toString(), Toast.LENGTH_LONG).show();
                 }
             }
+    }
+
+    private class AsyncFiltr extends AsyncTask<String, String, String>{
+        ProgressDialog pdLoading = new ProgressDialog(MenuPpal.this);
+        HttpURLConnection con;
+        URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL(URL_FOR_PART);
+
+            }catch(MalformedURLException e){
+                e.printStackTrace();
+                return e.toString();
+            }
+            try{
+                con = (HttpURLConnection) url.openConnection();
+                con.setReadTimeout(READ_TIMEOUT);
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setRequestMethod("POST");
+                con.setDoInput(true);
+                con.setDoOutput(true);
+
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("filtro",params[0]);
+                String query = builder.build().getEncodedQuery();
+
+
+                OutputStream os = con.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+                con.connect();
+
+            }catch (IOException e1){
+                e1.printStackTrace();
+                return e1.toString();
+            }
+            try{
+                int response_code = con.getResponseCode();
+                if(response_code == HttpURLConnection.HTTP_OK){
+                    InputStream input = con.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder sb = new StringBuilder();
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return (sb.toString());
+                }else{
+                    return ("unsuccessful");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+                return e.toString();
+            }finally{
+                con.disconnect();
+            }
+        }
+        @Override
+        protected void onPostExecute(String sb) {
+            pdLoading.dismiss();
+
+            try{
+                //Toast.makeText(MenuPpal.this, "sb:"+sb, Toast.LENGTH_LONG).show();
+                JSONObject jObj = new JSONObject(sb);
+                boolean error = jObj.getBoolean("error");
+
+                if (!error) {
+                    JSONArray jArray = jObj.getJSONArray("partitura");
+                    //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
+                    ArrayList<Datos_simple> info= new ArrayList<Datos_simple>();
+                    // Extract data from json and store into ArrayList as class objects
+                    for (int i = 0; i < jArray.length(); i++) {
+                        Datos_simple dato = new Datos_simple();
+                        JSONObject part_data = jArray.getJSONObject(i);
+                        String name = part_data.getString("name");
+                        String url = part_data.getString("url");
+                        String id = part_data.getString("id");
+                        //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                        dato.setName(name);
+                        dato.setUrl(url);
+                        dato.setId(id);
+                        dato.setCorreo(username);
+                        //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
+                        info.add(dato);
+                        //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
+                    }
+                    Gson gson = new Gson();
+                    //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
+                    String datosJson = gson.toJson(info);
+                    //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(MenuPpal.this, Busqueda.class);
+                    intent.putExtra("Datos",datosJson);
+                    intent.putExtra("nombre", name);
+                    intent.putExtra("username", username);
+                    MenuPpal.this.startActivity(intent);
+                    finish();
+
+                }else {
+                    // Error in login. Get the error message
+                    String errorMsg = jObj.getString("error_msg");
+                    Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+                }
+
+                // Setup and Handover data to recyclerview
+            }catch (JSONException e) {
+                Toast.makeText(MenuPpal.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /*public void piano (View view) {
