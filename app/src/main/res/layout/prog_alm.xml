@@ -71,30 +71,21 @@
                 android:inputType="time"
                 android:ems="10"
                 android:id="@+id/ethf" />
+
             <TextView
-                android:text="Cantidad compases aprendidos"
+                android:id="@+id/cant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/cant"
-                android:textSize="18sp" />
+                android:text="Cantidad compases aprendidos: "
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:textStyle="bold" />
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
                 android:id="@+id/etCant" />
-            <TextView
-                android:text="Número de compas actual"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/ubicacion"
-                android:textSize="18sp" />
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/etUbi" />
 
             <Button
                 android:id="@+id/save"

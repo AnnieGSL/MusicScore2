@@ -22,10 +22,10 @@ import java.util.ArrayList;
 public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
 
     private Context context;
-    private ArrayList<item> itemList;
+    private ArrayList<Datos> itemList;
     LayoutInflater inflater;
 
-    public almAdapter(Context context, ArrayList<item> itemList){
+    public almAdapter(Context context, ArrayList<Datos> itemList){
         this.context = context;
         this.itemList = itemList;
         inflater = LayoutInflater.from(context);
@@ -41,8 +41,9 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(final almAdapter.MyViewHolder myViewHolder, final int position) {
-        myViewHolder.textView.setText(itemList.get(position).title);
-        myViewHolder.imageView.setImageResource(itemList.get(position).imageId);
+        final Datos pdfDoc = itemList.get(position);
+        myViewHolder.textView.setText(pdfDoc.getName());
+        myViewHolder.imageView.setImageResource(pdfDoc.getImage());
         myViewHolder.imageButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view)
             {

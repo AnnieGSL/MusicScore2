@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class VistaPartitura extends AppCompatActivity {
     PDFView pdfView;
-    String id, correo, path;
+    String id, correo, path, origen, perfil, name;
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
     private static final String URL_FOR_INSERT = "http://musictesis.esy.es/addFav.php";
@@ -58,9 +58,12 @@ public class VistaPartitura extends AppCompatActivity {
         //pdfView.setScrollBar(scrollBar);
         //scrollBar.setHorizontal(false);
         Intent intent=this.getIntent();
+        name = intent.getExtras().getString("NAME");
         path = intent.getExtras().getString("PATH");
         id = intent.getExtras().getString("ID");
         correo = intent.getExtras().getString("USER");
+        perfil = intent.getExtras().getString("PERFIL");
+        origen = intent.getExtras().getString("origen");
         new RetrievePDFStream().execute(path);
 
         //Modalidad para leer desde almacenamiento del movil
@@ -91,6 +94,10 @@ public class VistaPartitura extends AppCompatActivity {
                 return true;
             case R.id.registrar_progreso:
                 Intent i = new Intent(this, progresoAlm.class);
+                i.putExtra("id", id);
+                i.putExtra("user", correo);
+                i.putExtra("name", name);
+                i.putExtra("perf", perfil);
                 this.startActivity(i);
                 break;
         }
@@ -100,7 +107,15 @@ public class VistaPartitura extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.popup_part, menu);
+        if (origen.equalsIgnoreCase("busqueda")){
+            if (perfil.equalsIgnoreCase("Profesor")){
+                getMenuInflater().inflate(R.menu.popup_partit, menu);
+            }else {
+                getMenuInflater().inflate(R.menu.popup_part, menu);
+            }
+        }else if (origen.equalsIgnoreCase("partitura")){
+            getMenuInflater().inflate(R.menu.popup_parti, menu);
+        }
         return true;
     }
 
@@ -128,20 +143,21 @@ public class VistaPartitura extends AppCompatActivity {
 
     private void insertDatos(){
         String cancel_req_tag = "vista";
-        //pDialog.setMessage("Cargando...");
-        //showDialog();
+        pDialog.setMessage("Cargando...");
+        showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_INSERT, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "Login Response: " + response.toString());
-                //hideDialog();
+                hideDialog();
+                //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
 
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
-                    Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
                     // Check for error node in json
                     if (!error) {
                         String user = jObj.getString("nombre");
@@ -188,7 +204,6 @@ public class VistaPartitura extends AppCompatActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         Long reference = downloadManager.enqueue(request);
     }
-
 
     private void showDialog() {
         if (!pDialog.isShowing())

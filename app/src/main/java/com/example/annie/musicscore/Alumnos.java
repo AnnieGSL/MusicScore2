@@ -7,6 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,12 +20,21 @@ import android.view.ViewGroup;
 public class Alumnos extends Fragment {
     RecyclerView recyclerView;
     almAdapter adapter;
+    String info;
+    ArrayList<Datos> array = new ArrayList<>();
 
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        if(getArguments()!=null){
+            Gson gson = new Gson();
+            info = getArguments().getString("Datos");
+            Type type = new TypeToken<ArrayList<Datos>>(){}.getType();
+            array = gson.fromJson(info, type);
+        }else{
 
-    public Alumnos() {
-        // Required empty public constructor
+        }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,12 +43,10 @@ public class Alumnos extends Fragment {
 
         recyclerView = (RecyclerView)fa.findViewById(R.id.rvAlmns);
 
-        adapter = new almAdapter(getActivity(), Datos.getData());
+        adapter = new almAdapter(getActivity(), array);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        // Inflate the layout for this fragment
+        recyclerView.setHasFixedSize(true);
         return fa;
     }
-
 }

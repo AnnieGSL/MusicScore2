@@ -38,14 +38,19 @@ public class partAdapter extends RecyclerView.Adapter<partAdapter.MyViewHolder> 
         myViewHolder.textView.setText(pdfDoc.getName());
         myViewHolder.setItemClickListener(new partAdapter.ItemClickListener(){
             public void onItemClick(int pos){
-                openPDFView(pdfDoc.getUrl());
+                openPDFView(pdfDoc.getName(),pdfDoc.getUrl(),pdfDoc.getId(), pdfDoc.getCorreo());
             }
         });
     }
 
-    private void openPDFView(String path) {
+    private void openPDFView(String name, String path, String id, String user) {
+        String origen = "partitura";
         Intent intent = new Intent(this.context, VistaPartitura.class);
+        intent.putExtra("NAME", name);
         intent.putExtra("PATH",path);
+        intent.putExtra("ID",id);
+        intent.putExtra("USER", user);
+        intent.putExtra("origen", origen);
         this.context.startActivity(intent);
     }
 

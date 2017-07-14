@@ -11,10 +11,6 @@
             android:icon="@drawable/ic_person_black_24dp"
             android:title="Perfil" />
         <item
-            android:id="@+id/nav_partituras"
-            android:icon="@drawable/ic_favorite_black_24dp"
-            android:title="Mis Partituras" />
-        <item
             android:id="@+id/nav_alumnos"
             android:icon="@drawable/ic_supervisor_account_black_24dp"
             android:title="Mis Alumnos" />

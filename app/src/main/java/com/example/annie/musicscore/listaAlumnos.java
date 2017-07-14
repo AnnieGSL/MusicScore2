@@ -14,18 +14,22 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class Busqueda extends AppCompatActivity {
-    /*Administra el activity que contiene la lista de busqueda*/
+/**
+ * Created by Annie on 14-07-2017.
+ */
+
+public class listaAlumnos extends AppCompatActivity {
+     /*Administra el activity que contiene la lista de busqueda*/
 
     RecyclerView recyclerView;
-    busqAdapter adapter;
+    listAdapter adapter;
     String nombre, correo, info, perfil;
-    ArrayList<Datos_url> array = new ArrayList<>();
+    ArrayList<item> array = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_busqueda);
+        setContentView(R.layout.activity_lista);
 
         //Aquí se define la flecha para volver a la ventana principal
         ActionBar actionBar = getSupportActionBar();
@@ -39,15 +43,15 @@ public class Busqueda extends AppCompatActivity {
         nombre = bundle.getString("nombre");
         correo = bundle.getString("username");
         perfil = bundle.getString("perfil");
-        Type type = new TypeToken<ArrayList<Datos_url>>(){}.getType();
+        Type type = new TypeToken<ArrayList<item>>(){}.getType();
         array = gson.fromJson(info, type);
         //Toast.makeText(Busqueda.this, "array"+array, Toast.LENGTH_LONG).show();
 
         //aqui se define el recyclerView del xml
-        recyclerView = (RecyclerView)findViewById(R.id.rvItem);
-        adapter = new busqAdapter(Busqueda.this, array);
+        recyclerView = (RecyclerView)findViewById(R.id.rvItema);
+        adapter = new listAdapter(listaAlumnos.this, array);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(Busqueda.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(listaAlumnos.this));
         recyclerView.setHasFixedSize(true);
     }
 
@@ -55,11 +59,11 @@ public class Busqueda extends AppCompatActivity {
         switch (itm.getItemId()){
             case android.R.id.home:
                 //onBackPressed();
-                Intent intent = new Intent(Busqueda.this, MenuPpal.class);
+                Intent intent = new Intent(listaAlumnos.this, MenuPpal.class);
                 intent.putExtra("nombre", nombre);
                 intent.putExtra("correo", correo);
                 intent.putExtra("perfil", perfil);
-                Busqueda.this.startActivity(intent);
+                listaAlumnos.this.startActivity(intent);
                 finish();
                 return true;
         }
