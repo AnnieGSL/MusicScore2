@@ -7,35 +7,35 @@
     android:weightSum="4">
 
     <EditText
+        android:id="@+id/wObs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:inputType="textMultiLine"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:ems="10"
-        android:id="@+id/editText3"
-        android:layout_weight="1"
-        android:singleLine="false"
-        android:textAlignment="viewStart"
         android:layout_gravity="start"
-        />
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        android:textAlignment="viewStart" />
 
     <Button
-        android:text="Guardar"
+        android:id="@+id/buttonSave"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:id="@+id/button7"
-        android:layout_weight="3"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:textAlignment="center"
         android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="10dp"
+        android:layout_weight="3"
+        android:background="@color/colorPrimary"
+        android:onClick="save"
+        android:text="Guardar"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textColorLink="?android:attr/textColorPrimary"
-        android:textSize="18sp"
-        android:background="@color/colorPrimary"/>
+        android:textSize="18sp" />
 </LinearLayout>

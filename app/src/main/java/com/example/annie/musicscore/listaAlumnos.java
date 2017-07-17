@@ -45,7 +45,7 @@ public class listaAlumnos extends AppCompatActivity {
         perfil = bundle.getString("perfil");
         Type type = new TypeToken<ArrayList<item>>(){}.getType();
         array = gson.fromJson(info, type);
-        //Toast.makeText(Busqueda.this, "array"+array, Toast.LENGTH_LONG).show();
+        //Toast.makeText(listaAlumnos.this, "array"+array, Toast.LENGTH_LONG).show();
 
         //aqui se define el recyclerView del xml
         recyclerView = (RecyclerView)findViewById(R.id.rvItema);

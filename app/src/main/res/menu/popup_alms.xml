@@ -3,7 +3,12 @@
     <item
         android:id="@+id/obs"
         android:orderInCategory="100"
-        android:title="Observaciones"
+        android:title="Lista Observaciones"
+        />
+    <item
+        android:id="@+id/nuv"
+        android:orderInCategory="100"
+        android:title="Nueva Observación"
         />
     <item
         android:id="@+id/prg"

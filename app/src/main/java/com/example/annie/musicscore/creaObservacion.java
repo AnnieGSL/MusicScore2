@@ -1,14 +1,16 @@
 package com.example.annie.musicscore;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
-import java.io.File;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +19,9 @@ import java.util.ArrayList;
 
 public class creaObservacion extends AppCompatActivity {
     RecyclerView recyclerView;
-    partAdapter adapter; //CAMBIAR, CREAR ADAPTADOR PARA QYE LEA BASE DE DATOS MYSQL
+    obsAdapter adapter;
+    String info, username;
+    ArrayList<Datos_obs> array = new ArrayList<>();
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -27,15 +31,21 @@ public class creaObservacion extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_36dp);
 
+        Bundle bundle = getIntent().getExtras();
+        Gson gson = new Gson();
+        info = bundle.getString("Datos");
+        Type type = new TypeToken<ArrayList<Datos_obs>>(){}.getType();
+        array = gson.fromJson(info, type);
+
         recyclerView = (RecyclerView)findViewById(R.id.rvItem);
-        adapter = new partAdapter(this, getPDFs());
+        adapter = new obsAdapter(this, array);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
     }
 
-    //QUITARpdf
-
+/*
+    //Lee dato desde memoria interna
     private ArrayList<Datos_simple> getPDFs() {
         ArrayList<Datos_simple> pdfDocs = new ArrayList<>();
         File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -54,7 +64,7 @@ public class creaObservacion extends AppCompatActivity {
         }
         return pdfDocs;
     }
-
+*/
     public boolean onOptionsItemSelected(MenuItem itm){
         switch (itm.getItemId()){
             case android.R.id.home:

@@ -35,6 +35,7 @@ public class listAdapter extends RecyclerView.Adapter<listAdapter.MyViewHolder> 
     private static final String TAG = "ListaAlumnos";
     ProgressDialog pDialog;
 
+
     public listAdapter(Context context, ArrayList<item> itemList){
         this.context = context;
         this.itemList = itemList;
@@ -64,22 +65,22 @@ public class listAdapter extends RecyclerView.Adapter<listAdapter.MyViewHolder> 
     private void addAlm(final String profe, final String alumno, final String userAl) {
         // Tag used to cancel the request
         String cancel_req_tag = "register";
-        //pDialog.setMessage("Adding you...");
-        //showDialog();
+        pDialog.setMessage("Cargando...");
+        showDialog();
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 URL_FOR_ADD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "Register Response: " + response.toString());
-                //hideDialog();
+                hideDialog();
 
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
 
                     if (!error) {
-                        String user = jObj.getJSONObject("user").getString("name");
-                        Toast.makeText(context, "Alumno agregado exitosamente" , Toast.LENGTH_SHORT).show();
+                        String user = jObj.getString("nombre");
+                        Toast.makeText(context, "Alumno "+ user+" agregado exitosamente!" , Toast.LENGTH_SHORT).show();
                     } else {
                         String errorMsg = jObj.getString("error_msg");
                         Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
@@ -94,7 +95,7 @@ public class listAdapter extends RecyclerView.Adapter<listAdapter.MyViewHolder> 
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Agregar Error: " + error.getMessage());
                 Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG).show();
-                //hideDialog();
+                hideDialog();
             }
         }) {
             @Override
@@ -124,6 +125,9 @@ public class listAdapter extends RecyclerView.Adapter<listAdapter.MyViewHolder> 
             itemView.setOnClickListener(this);
             textView =(TextView)itemView.findViewById(R.id.tv_row);
             textView2 = (TextView)itemView.findViewById(R.id.tv_row2);
+            //Progress Dialog
+            pDialog = new ProgressDialog(context);
+            pDialog.setCancelable(false);
         }
 
         public void setItemClickListener(listAdapter.ItemClickListener itemClickListener){

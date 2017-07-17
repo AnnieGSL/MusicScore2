@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -54,12 +52,13 @@ public class MenuPpal extends AppCompatActivity
     private String name, username, perfil, busq;
 
     private static final String TAG = "Busqueda";
-    private static final String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
+    private static String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
+    private static final String URL_FOR_FILTRo = "http://musictesis.esy.es/getAl.php";
     private static final String URL_FOR_PART = "http://musictesis.esy.es/getPdfs(json).php";
     private static final String URL_FOR_ALMNOS ="http://musictesis.esy.es/getAlmn.php";
     private static final String URL_FOR_BUSCAR = "http://musictesis.esy.es/getAlm.php";
 
-    private ProgressDialog pDialog;
+    ProgressDialog pDialog;
 
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
@@ -68,6 +67,10 @@ public class MenuPpal extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Progress Dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
+
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString("nombre");
         username = bundle.getString("correo");
@@ -91,6 +94,8 @@ public class MenuPpal extends AppCompatActivity
         otro = (TextView)findViewById(R.id.otro);
 
 
+        //PERSAR SI QUITAR O QUE FUNCIONALIDAD DAR
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +104,7 @@ public class MenuPpal extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -167,15 +173,15 @@ public class MenuPpal extends AppCompatActivity
 
     private void buscarAlm() {
         String cancel_req_tag = "Alumnos";
-        //pDialog.setMessage("Cargando...");
-        //showDialog();
+        pDialog.setMessage("Cargando...");
+        showDialog();
 
         StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_BUSCAR, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "Busca Response: " + response.toString());
-                //hideDialog();
+                hideDialog();
                 //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
 
                 try {
@@ -231,7 +237,7 @@ public class MenuPpal extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Alumnos Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                //hideDialog();
+                hideDialog();
             }
         }) {
 
@@ -287,7 +293,6 @@ public class MenuPpal extends AppCompatActivity
         String filtro = et.getText().toString();
         new AsyncFilt().execute(filtro);
     }
-
 
     private class AsyncFilt extends AsyncTask<String, String, String>{
         ProgressDialog pdLoading = new ProgressDialog(MenuPpal.this);
@@ -620,9 +625,11 @@ public class MenuPpal extends AppCompatActivity
                         Datos dato = new Datos();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String nameAl = part_data.getString("name");
+                        String userAl = part_data.getString("username");
                         int imageAl = R.drawable.harry;
                         //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                         dato.setName(nameAl);
+                        dato.setUsername(userAl);
                         dato.setImage(imageAl);
                         //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
                         info.add(dato);
@@ -650,18 +657,24 @@ public class MenuPpal extends AppCompatActivity
         }
     }
 
-    /*public void piano (View view) {
-        Intent i = new Intent(this, Busqueda.class);
-        startActivity(i);
+    public void piano (View view) {
+        URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
+        EditText et = (EditText)findViewById(R.id.et);
+        String filtro = "Piano";
+        new AsyncFilt().execute(filtro);
     }
     public void guitarra (View view) {
-        Intent i = new Intent(this, Busqueda.class);
-        startActivity(i);
+        URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
+        EditText et = (EditText)findViewById(R.id.et);
+        String filtro = "Guitarra";
+        new AsyncFilt().execute(filtro);
     }
     public void violin (View view) {
-        Intent i = new Intent(this, Busqueda.class);
-        startActivity(i);
-    }*/
+        URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
+        EditText et = (EditText)findViewById(R.id.et);
+        String filtro = "Violin";
+        new AsyncFilt().execute(filtro);
+    }
 
     private void showDialog() {
         if (!pDialog.isShowing())

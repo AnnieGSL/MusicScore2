@@ -34,11 +34,9 @@ import java.util.Map;
 public class VistaPartitura extends AppCompatActivity {
     PDFView pdfView;
     String id, correo, path, origen, perfil, name;
-    public static final int CONNECTION_TIMEOUT = 10000;
-    public static final int READ_TIMEOUT = 15000;
     private static final String URL_FOR_INSERT = "http://musictesis.esy.es/addFav.php";
     private static final String TAG = "VistaPartitura";
-    private ProgressDialog pDialog;
+    ProgressDialog pDialog;
     DownloadManager downloadManager;
 
 
@@ -52,6 +50,10 @@ public class VistaPartitura extends AppCompatActivity {
         assert actionBar!=null;
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_36dp);
+
+        //Progress Dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         pdfView = (PDFView) findViewById(R.id.pdfView);
         //ScrollBar scrollBar = (ScrollBar)findViewById(R.id.scrollBar);
@@ -180,7 +182,7 @@ public class VistaPartitura extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Login Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                //hideDialog();
+                hideDialog();
             }
         }) {
 

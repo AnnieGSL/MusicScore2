@@ -38,11 +38,15 @@ public class progresoAlm extends AppCompatActivity {
     private static final String URL_FOR_INSERT = "http://musictesis.esy.es/progreso.php";
     private static final String TAG = "Progreso";
     private String id, correo;
-    private ProgressDialog pDialog;
+    ProgressDialog pDialog;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.prog_alm);
+
+        //Progress Dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         cantidad = (EditText)findViewById(R.id.etCant);
         cCompas = (TextView)findViewById(R.id.cant);
@@ -58,7 +62,7 @@ public class progresoAlm extends AppCompatActivity {
         mes = c.get(Calendar.MONTH);
         ano = c.get(Calendar.YEAR);
 
-        Toast.makeText(getApplicationContext(), "mes: "+mes, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "dia: "+dia +"mes: "+mes+"año: "+ano, Toast.LENGTH_LONG).show();
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override

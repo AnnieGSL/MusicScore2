@@ -31,8 +31,6 @@ public class Alumnos extends Fragment {
             info = getArguments().getString("Datos");
             Type type = new TypeToken<ArrayList<Datos>>(){}.getType();
             array = gson.fromJson(info, type);
-        }else{
-
         }
     }
 
