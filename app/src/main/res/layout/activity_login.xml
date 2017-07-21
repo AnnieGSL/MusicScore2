@@ -27,11 +27,10 @@
 
 
             <ImageView
+                android:id="@+id/ivLogin"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                app:srcCompat="@drawable/platform"
-                android:id="@+id/ivLogin"
-                />
+                app:srcCompat="@drawable/ic_launcher" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"

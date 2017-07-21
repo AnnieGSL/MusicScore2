@@ -32,9 +32,12 @@ import java.util.Map;
  */
 
 public class progresoAlm extends AppCompatActivity {
-    private TextView cCompas, uCompas;
-    private EditText fecha, hInicio, hFinal, cantidad;
-    private int dia, mes, ano, horai, horaf, minutosi, minutosf;
+    private TextView fecha, hInicio, hFinal, cCompas, uCompas;
+    private EditText  cantidad;
+    private int dia; private int mes; private int ano; private int horai; private int horaf; private int minutosi; private int minutosf; private int hi;
+    private int mi;
+    private int hf;
+    private int mf; private int min; private int hr;
     private static final String URL_FOR_INSERT = "http://musictesis.esy.es/progreso.php";
     private static final String TAG = "Progreso";
     private String id, correo;
@@ -50,7 +53,7 @@ public class progresoAlm extends AppCompatActivity {
 
         cantidad = (EditText)findViewById(R.id.etCant);
         cCompas = (TextView)findViewById(R.id.cant);
-        fecha = (EditText)findViewById(R.id.etFecha);
+        fecha = (TextView) findViewById(R.id.etFecha);
 
         Intent intent=this.getIntent();
         id = intent.getExtras().getString("id");
@@ -74,7 +77,7 @@ public class progresoAlm extends AppCompatActivity {
         datePickerDialog.show();
     }
     public void inicio (View view){
-        hInicio = (EditText)findViewById(R.id.ethi);
+        hInicio = (TextView) findViewById(R.id.ethi);
         final Calendar c = Calendar.getInstance();
         horai = c.get(Calendar.HOUR_OF_DAY);
         minutosi = c.get(Calendar.MINUTE);
@@ -97,13 +100,16 @@ public class progresoAlm extends AppCompatActivity {
                 }else{
                     hInicio.setText(hourOfDay + ":" + minute);
                 }
+                hi = hourOfDay;
+                mi = minute;
             }
         }
         ,horai,minutosi,false);
         timePickerDialog.show();
+
     }
     public void fin (View view){
-        hFinal = (EditText)findViewById(R.id.ethf);
+        hFinal = (TextView) findViewById(R.id.ethf);
         final Calendar c = Calendar.getInstance();
         horaf = c.get(Calendar.HOUR_OF_DAY);
         minutosf = c.get(Calendar.MINUTE);
@@ -126,17 +132,42 @@ public class progresoAlm extends AppCompatActivity {
                 }else{
                     hFinal.setText(hourOfDay + ":" + minute);
                 }
+                hf = hourOfDay;
+                mf = minute;
             }
         }
         ,horaf,minutosf,false);
         timePickerDialog.show();
     }
     public void guardar (View view){
+        if(mf < mi){
+            mf = mf + 60;
+            if(hf<hi) {
+                hf = (hf + hi);
+                min = mf - mi;
+                hr = hf - hi;
+            }else{
+                hf = hf - 1;
+                min = mf - mi;
+                hr = hf - hi;
+            }
+        }else if (hf < hi){
+            hf = hf + 24;
+            min = mf - mi;
+            hr = hf - hi;
+        }else{
+            min = mf-mi;
+            hr = hf-hi;
+        }
+        hr = hr * 60;
+        min = min + hr;
+        String mn = ""+min+"";
+        Toast.makeText(getApplicationContext(), "minutos: "+min, Toast.LENGTH_LONG).show();
         String f = ano+"-"+(mes+1)+"-"+dia;
-        addProgres(f.toString(), hInicio.getText().toString()+":00", hFinal.getText().toString()+":00", cantidad.getText().toString());
+        addProgres(f.toString(), hInicio.getText().toString()+":00", hFinal.getText().toString()+":00", mn.toString(), cantidad.getText().toString());
     }
 
-    public void addProgres(final String fecha, final String inicio, final String fin, final String cantidad){
+    public void addProgres(final String fecha, final String inicio, final String fin, final String m, final String cantidad){
         String cancel_req_tag = "progreso";
         pDialog.setMessage("Cargando...");
         showDialog();
@@ -189,6 +220,7 @@ public class progresoAlm extends AppCompatActivity {
                 params.put("cantCompas", cantidad);
                 params.put("id", id);
                 params.put("correo", correo);
+                params.put("min",m);
                 return params;
             }
         };

@@ -41,6 +41,7 @@
         <activity android:name=".Registration" />
         <activity android:name=".UserArea"></activity>
         <activity android:name=".listaAlumnos" />
+        <activity android:name=".graphPrg" />
     </application>
 
 </manifest>

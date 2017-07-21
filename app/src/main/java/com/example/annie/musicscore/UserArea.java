@@ -42,6 +42,6 @@ public class UserArea extends AppCompatActivity {
                 UserArea.this.startActivity(i);
                 finish();
             }
-        }, 2000);
+        }, 1000);
     }
 }

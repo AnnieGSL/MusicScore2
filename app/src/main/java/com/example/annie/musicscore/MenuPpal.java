@@ -218,7 +218,7 @@ public class MenuPpal extends AppCompatActivity
                         intent.putExtra("username", username);
                         intent.putExtra("perfil", perfil);
                         MenuPpal.this.startActivity(intent);
-                        finish();
+                        //finish();
 
                     } else {
                         // Error in login. Get the error message
@@ -277,6 +277,7 @@ public class MenuPpal extends AppCompatActivity
         } else if (id == R.id.nav_sesion) {
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(i);
+            finish();
         } else if (id == R.id.nav_info) {
             AcercaDe acerca = new AcercaDe();
             fm.beginTransaction().replace(R.id.content_frame, acerca).commit();
@@ -403,7 +404,7 @@ public class MenuPpal extends AppCompatActivity
                         intent.putExtra("username", username);
                         intent.putExtra("perfil", perfil);
                         MenuPpal.this.startActivity(intent);
-                        finish();
+                        //finish();
 
                     }else {
                         // Error in login. Get the error message
