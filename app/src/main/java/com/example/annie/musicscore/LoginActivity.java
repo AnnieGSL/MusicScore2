@@ -2,6 +2,7 @@ package com.example.annie.musicscore;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,6 +39,10 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLinkToRegister;
     private ImageView mLogin;
     private ProgressDialog pDialog;
+    private String n, u, p;
+
+    SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +53,37 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
         mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
-
         mLogin = (ImageView)findViewById(R.id.ivLogin);
 
+        sharedpreferences = getSharedPreferences("ArchivoLogin", getApplicationContext().MODE_PRIVATE);
+        n = sharedpreferences.getString("name", "");
+        u = sharedpreferences.getString("username", "");
+        p = sharedpreferences.getString("perfil", "");
+
+        //Toast.makeText(getApplicationContext(), "SP: " + n + u + p, Toast.LENGTH_SHORT).show();
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
+
+        if(n!="" && u!="" && p!=""){
+            Intent intent = new Intent(LoginActivity.this, MenuPpal.class);
+            intent.putExtra("nombre",n);
+            intent.putExtra("correo",u);
+            intent.putExtra("perfil",p);
+            LoginActivity.this.startActivity(intent);
+            finish();
+        }else{
+            Toast.makeText(getApplicationContext(), "Nuevo inicio de sesión", Toast.LENGTH_SHORT).show();
+        }
+
 
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 final String username = mEmailView.getText().toString();
                 final String password = mPasswordView.getText().toString();
+                editor = sharedpreferences.edit();
+
                 // Tag used to cancel the request
                 //Toast.makeText(getApplicationContext(), "LoginUser", Toast.LENGTH_LONG).show();
                 String cancel_req_tag = "login";
@@ -85,6 +109,11 @@ public class LoginActivity extends AppCompatActivity {
                                 String user = jObj.getJSONObject("user").getString("username");
                                 String perf = jObj.getJSONObject("user").getString("perfil");
                                 // Launch main activity
+                                editor.putString("username", username);
+                                editor.putString("password", password);
+                                editor.putString("name", name);
+                                editor.putString("perfil", perf);
+                                editor.commit();
                                 Intent intent = new Intent(LoginActivity.this, UserArea.class);
                                 intent.putExtra("name",name);
                                 intent.putExtra("username",user);
@@ -123,6 +152,8 @@ public class LoginActivity extends AppCompatActivity {
                 };
                 // Adding request to request queue
                 AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
+
+
             }
         });
 

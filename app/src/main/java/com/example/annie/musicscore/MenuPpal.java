@@ -2,6 +2,7 @@ package com.example.annie.musicscore;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,6 +64,8 @@ public class MenuPpal extends AppCompatActivity
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
 
+    SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +96,7 @@ public class MenuPpal extends AppCompatActivity
         penta = (TextView)findViewById(R.id.penta);
         otro = (TextView)findViewById(R.id.otro);
 
-
+        sharedpreferences = getSharedPreferences("ArchivoLogin",MenuPpal.MODE_PRIVATE);
         //PERSAR SI QUITAR O QUE FUNCIONALIDAD DAR
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -157,9 +160,13 @@ public class MenuPpal extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(MenuPpal.this, message.class);
+            i.putExtra("name", name);
+            MenuPpal.this.startActivity(i);
+            finish();
+            //Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
             return true;
         }
         if(id == R.id.action_add) {
@@ -167,7 +174,6 @@ public class MenuPpal extends AppCompatActivity
             buscarAlm();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -262,28 +268,35 @@ public class MenuPpal extends AppCompatActivity
             fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
             //Toast.makeText(this, "Principal", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_cuenta) {
-            Perfil perfil = new Perfil();
-            fm.beginTransaction().replace(R.id.content_frame, perfil).commit();
-            //Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show();
+            //Perfil perfil = new Perfil();
+            //fm.beginTransaction().replace(R.id.content_frame, perfil).commit();
+            Toast.makeText(this, "NO hablitado", Toast.LENGTH_SHORT).show();
         }else if (id == R.id.nav_partituras){
             String filtro = username;
             new AsyncFiltr().execute(filtro);
-        } else if (id == R.id.nav_mensajes) {
-            Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_alumnos) {
+        }
+        /*else if (id == R.id.nav_mensajes) {
+            //Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(MenuPpal.this, message.class);
+            i.putExtra("name", name);
+            MenuPpal.this.startActivity(i);
+            finish();
+        }
+        */else if (id == R.id.nav_alumnos) {
             String filtro = username;
             new AsyncFiltro().execute(filtro);
             //Toast.makeText(this, "Lista de Alumnos", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_sesion) {
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(i);
+            editor = sharedpreferences.edit();
+            editor.clear();
+            editor.commit();
+            Intent i = new Intent(MenuPpal.this, LoginActivity.class);
+            MenuPpal.this.startActivity(i);
             finish();
         } else if (id == R.id.nav_info) {
             AcercaDe acerca = new AcercaDe();
             fm.beginTransaction().replace(R.id.content_frame, acerca).commit();
         }
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

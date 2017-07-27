@@ -90,6 +90,9 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
                         new AsyncFiltr().execute(filtr);
                         break;
                     case R.id.msj:
+                        Intent i = new Intent(context, message.class);
+                        i.putExtra("username", username);
+                        context.startActivity(i);
                         Toast.makeText(context,"Mensaje "+position,Toast.LENGTH_SHORT).show();
                         return true;
                 }

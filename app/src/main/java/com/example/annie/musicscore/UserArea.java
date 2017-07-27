@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 public class UserArea extends AppCompatActivity {
     private TextView etUsername, welcomeMessage;
-    private String name, username, perfil;
+    private String name, username, perfil, temp;
 
 
     @Override

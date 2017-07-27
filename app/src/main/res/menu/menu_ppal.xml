@@ -4,6 +4,7 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:icon="@drawable/ic_email_black_24dp"
+        android:title="Mis Mensajes"
         app:showAsAction="never" />
 </menu>

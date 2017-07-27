@@ -14,10 +14,6 @@
             android:id="@+id/nav_partituras"
             android:icon="@drawable/ic_favorite_black_24dp"
             android:title="Mis Partituras" />
-        <item
-            android:id="@+id/nav_mensajes"
-            android:icon="@drawable/ic_email_black_24dp"
-            android:title="Mis Mensajes" />
     </group>
 
     <item android:title="Extras">
