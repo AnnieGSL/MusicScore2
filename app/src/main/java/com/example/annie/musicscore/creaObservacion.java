@@ -40,6 +40,7 @@ public class creaObservacion extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.rvItem);
         adapter = new obsAdapter(this, array);
         recyclerView.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
     }

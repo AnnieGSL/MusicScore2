@@ -6,7 +6,7 @@ package com.example.annie.musicscore;
  */
 
 public class Datos {
-    String nombre, username;
+    String nombre, username, emisor;
     int image;
 
     public String getName(){
@@ -14,6 +14,12 @@ public class Datos {
     }
     public void setName(String nombre){
         this.nombre = nombre;
+    }
+    public String getEmisor(){
+        return emisor;
+    }
+    public void setEmisor(String emisor){
+        this.emisor = emisor;
     }
     public String getUsername(){
         return username;

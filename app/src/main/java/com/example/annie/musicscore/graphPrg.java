@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -16,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Annie on 20-07-2017.
@@ -27,7 +29,7 @@ public class graphPrg extends AppCompatActivity {
     ArrayList<Entry> y = new ArrayList<>();
     ArrayList<String> x = new ArrayList<>();
     ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
-    int year, mes, dia, min, m, pos;
+    int year, mes, dia, min, m, pos, mesA, anoA;
     LineChart lineChart;
 
     ArrayList<String> fechas = new ArrayList<>();
@@ -52,6 +54,10 @@ public class graphPrg extends AppCompatActivity {
         array = gson.fromJson(info, type);
 
         lineChart = (LineChart)findViewById(R.id.bargraph);
+
+        Calendar c = Calendar.getInstance();
+        mesA = c.get(Calendar.MONTH);
+        anoA = c.get(Calendar.YEAR);
 
         for (int i = 0; i < array.size(); i++){
             Datos_prg data = array.get(i);
@@ -80,16 +86,23 @@ public class graphPrg extends AppCompatActivity {
             mes = Integer.parseInt(date.substring(5,7));
             dia = Integer.parseInt(date.substring(8,date.length()));
             min = minutos.get(i);
-            y.add(new Entry(min,i));
-            h = String.valueOf(dia);
-            x.add("Día "+h);
+            if(mes == mesA) {
+                y.add(new Entry(min, i));
+                h = String.valueOf(dia);
+                x.add("Día " + h);
+            }
         }
-        LineDataSet lineDataSet = new LineDataSet(y,"Minutos diarios");
-        lineDataSet.setDrawCircles(true);
-        lineDataSet.setColor(Color.BLUE);
-        lineDataSets.add(lineDataSet);
-        lineChart.setData(new LineData(x,lineDataSets));
-
+        if(y.isEmpty()){
+            Toast.makeText(getApplicationContext(), "No hay progreso registrado el presente mes.", Toast.LENGTH_LONG).show();
+            finish();
+            onBackPressed();
+        }else {
+            LineDataSet lineDataSet = new LineDataSet(y, "Minutos diarios");
+            lineDataSet.setDrawCircles(true);
+            lineDataSet.setColor(Color.BLUE);
+            lineDataSets.add(lineDataSet);
+            lineChart.setData(new LineData(x, lineDataSets));
+        }
         //Toast.makeText(graphPrg.this, "x: "+x+"y: "+y, Toast.LENGTH_LONG).show();
     }
 

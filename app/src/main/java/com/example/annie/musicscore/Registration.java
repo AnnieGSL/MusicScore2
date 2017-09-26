@@ -91,6 +91,13 @@ public class Registration extends AppCompatActivity {
         String cancel_req_tag = "register";
         pDialog.setMessage("Adding you...");
         showDialog();
+        final String token = SharedPrefManager.getInstance(this).getDeviceToken();
+        if (token == null) {
+            hideDialog();
+            Toast.makeText(this, "Token no fue generado", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 URL_FOR_REGISTRATION, new Response.Listener<String>() {
             @Override
@@ -135,6 +142,7 @@ public class Registration extends AppCompatActivity {
                 params.put("password", password);
                 params.put("perfil", perfil);
                 params.put("age", age);
+                params.put("token", token);
                 return params;
             }
         };

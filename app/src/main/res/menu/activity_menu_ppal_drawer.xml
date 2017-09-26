@@ -14,6 +14,14 @@
             android:id="@+id/nav_alumnos"
             android:icon="@drawable/ic_supervisor_account_black_24dp"
             android:title="Mis Alumnos" />
+        <item
+            android:id="@+id/nav_mensajes"
+            android:icon="@drawable/ic_email_black_24dp"
+            android:title="Mis Mensajes"/>
+        <item
+            android:id="@+id/nav_upload"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Subir Partitura"/>
     </group>
 
     <item android:title="Extras">

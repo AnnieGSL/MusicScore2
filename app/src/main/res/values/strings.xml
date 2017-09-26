@@ -12,6 +12,10 @@
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Contraseña</string>
+    <string name="hint_titulo">Título</string>
+    <string name="hint_compositor">Compositor</string>
+    <string name="hint_instrumento">Instrumento</string>
+    <string name="hint_narchivo">Nombre Archivo</string>
     <string name="hint_name">Nombre</string>
     <string name="btn_login">Iniciar Sesión</string>
     <string name="btn_register">Crear Cuenta</string>

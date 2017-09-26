@@ -2,6 +2,8 @@ package com.example.annie.musicscore;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +17,23 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +84,9 @@ public class vistaObservacion extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem itm) {
         switch (itm.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                //onBackPressed();
+                String filtro = username;
+                new AsyncFilt().execute(filtro);
                 return true;
         }
         return super.onOptionsItemSelected(itm);
@@ -87,6 +104,8 @@ public class vistaObservacion extends AppCompatActivity {
         if (origen.equalsIgnoreCase("Lista")){
             descSend = obs.getText().toString();
             enviarDatos(descSend, fecha, time, username);
+            String filtro = username;
+            new AsyncFilt().execute(filtro);
         }else if(origen.equalsIgnoreCase("Menu")){
             descSend = obs.getText().toString();
             fecha = ano+"-"+(mes+1)+"-"+dia;
@@ -96,6 +115,8 @@ public class vistaObservacion extends AppCompatActivity {
     }
 
     private void enviarDatos(final String descS, final String fech, final String tim, final String user) {
+        final String fechan = ano+"-"+(mes+1)+"-"+dia;
+        final String timen = hora+":"+minutos+":"+segundos;
         String cancel_req_tag = "Alumnos";
         pDialog.setMessage("Cargando...");
         showDialog();
@@ -143,6 +164,8 @@ public class vistaObservacion extends AppCompatActivity {
                 params.put("date", fech);
                 params.put("time", tim);
                 params.put("user", user);
+                params.put("nDate", fechan);
+                params.put("nTime", timen);
                 return params;
             }
         };
@@ -158,5 +181,123 @@ public class vistaObservacion extends AppCompatActivity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+    private class AsyncFilt extends AsyncTask<String, String, String> {
+        //ProgressDialog pdLoading = new ProgressDialog(vistaObservacion.this);
+        HttpURLConnection con;
+        URL url = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //pdLoading.setMessage("\tLoading...");
+            //pdLoading.setCancelable(false);
+            //pdLoading.show();
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL("http://musictesis.esy.es/getObs.php");
+
+            }catch(MalformedURLException e){
+                e.printStackTrace();
+                return e.toString();
+            }
+            try{
+                con = (HttpURLConnection) url.openConnection();
+                con.setReadTimeout(15000);
+                con.setConnectTimeout(10000);
+                con.setRequestMethod("POST");
+                con.setDoInput(true);
+                con.setDoOutput(true);
+
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("filtro",params[0]);
+                String query = builder.build().getEncodedQuery();
+
+
+                OutputStream os = con.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+                con.connect();
+
+            }catch (IOException e1){
+                e1.printStackTrace();
+                return e1.toString();
+            }
+            try{
+                int response_code = con.getResponseCode();
+                if(response_code == HttpURLConnection.HTTP_OK){
+                    InputStream input = con.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder sb = new StringBuilder();
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return (sb.toString());
+                }else{
+                    return ("unsuccessful");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+                return e.toString();
+            }finally{
+                con.disconnect();
+            }
+        }
+        @Override
+        protected void onPostExecute(String sb) {
+            //pdLoading.dismiss();
+
+            try{
+                //Toast.makeText(context, "sb:"+sb, Toast.LENGTH_LONG).show();
+                JSONObject jObj = new JSONObject(sb);
+                boolean error = jObj.getBoolean("error");
+
+                if (!error) {
+                    JSONArray jArray = jObj.getJSONArray("user");
+                    //Toast.makeText(context, "jArray"+jArray, Toast.LENGTH_LONG).show();
+                    ArrayList<Datos_obs> info= new ArrayList<Datos_obs>();
+                    // Extract data from json and store into ArrayList as class objects
+                    for (int i = 0; i < jArray.length(); i++) {
+                        Datos_obs dato = new Datos_obs();
+                        JSONObject part_data = jArray.getJSONObject(i);
+                        String fecha = part_data.getString("fecha");
+                        String hora = part_data.getString("hora");
+                        String desc = part_data.getString("descripcion");
+                        String username = part_data.getString("username");
+                        //MODIFICAR DATO SIMPLE PARA ENVIAR PERFIL A OTRA VENTANA
+                        //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                        dato.setFecha(fecha);
+                        dato.setHora(hora);
+                        dato.setDesc(desc);
+                        dato.setUsername(username);
+                        //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
+                        info.add(dato);
+                        //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
+                    }
+                    Gson gson = new Gson();
+                    //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
+                    String datosJson = gson.toJson(info);
+                    //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(vistaObservacion.this, creaObservacion.class);
+                    intent.putExtra("Datos",datosJson);
+                    vistaObservacion.this.startActivity(intent);
+                    finish();
+                }else {
+                    // Error in login. Get the error message
+                    String errorMsg = jObj.getString("error_msg");
+                    Toast.makeText(vistaObservacion.this, errorMsg + ", crear nueva.", Toast.LENGTH_LONG).show();
+                }
+
+                // Setup and Handover data to recyclerview
+            }catch (JSONException e) {
+                Toast.makeText(vistaObservacion.this, e.toString(), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

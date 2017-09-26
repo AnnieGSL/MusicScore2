@@ -3,10 +3,13 @@ package com.example.annie.musicscore;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +31,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
+
+import net.gotev.uploadservice.MultipartUploadRequest;
+import net.gotev.uploadservice.UploadNotificationConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,19 +52,29 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MenuPpal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private TextView titulo, notas, sol, silencio, acorde, penta, otro;
     private String name, username, perfil, busq;
+    private EditText tit, comp, inst;
+    private Button cargaButton, subeButton;
 
-    private static final String TAG = "Busqueda";
+    public static final String  URL_FOR_UPLOAD = "http://musictesis.esy.es/upload.php";
+    private int PICK_PDF_REQUEST = 1;
+    private static final int STORAGE_PERMISSION_CODE = 123;
+    private Uri filePath;
+
+    private static final String TAG = "PRINCIPAL";
     private static String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
     private static final String URL_FOR_FILTRo = "http://musictesis.esy.es/getAl.php";
     private static final String URL_FOR_PART = "http://musictesis.esy.es/getPdfs(json).php";
     private static final String URL_FOR_ALMNOS ="http://musictesis.esy.es/getAlmn.php";
     private static final String URL_FOR_BUSCAR = "http://musictesis.esy.es/getAlm.php";
+    private static final String URL_FOR_MENSAJE = "http://musictesis.esy.es/getMsg.php";
+
 
     ProgressDialog pDialog;
 
@@ -95,6 +112,13 @@ public class MenuPpal extends AppCompatActivity
         acorde = (TextView)findViewById(R.id.acorde);
         penta = (TextView)findViewById(R.id.penta);
         otro = (TextView)findViewById(R.id.otro);
+        tit = (EditText)findViewById(R.id.etTit);
+        comp = (EditText)findViewById(R.id.etComp);
+        inst = (EditText)findViewById(R.id.etIns);
+        cargaButton = (Button)findViewById(R.id.cargar_pdf_button);
+        subeButton = (Button)findViewById(R.id.subir_pdf_button);
+
+        requestStoragePermission();
 
         sharedpreferences = getSharedPreferences("ArchivoLogin",MenuPpal.MODE_PRIVATE);
         //PERSAR SI QUITAR O QUE FUNCIONALIDAD DAR
@@ -162,10 +186,14 @@ public class MenuPpal extends AppCompatActivity
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            String filtro = username;
+            buscarMsg(filtro);
+            /*
             Intent i = new Intent(MenuPpal.this, message.class);
             i.putExtra("name", name);
             MenuPpal.this.startActivity(i);
             finish();
+            */
             //Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -175,6 +203,98 @@ public class MenuPpal extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void buscarMsg(final String filtro) {
+        String cancel_req_tag = "Mensajes";
+        pDialog.setMessage("Cargando...");
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_MENSAJE, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Busca Response: " + response.toString());
+                hideDialog();
+                //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    //Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
+                    // Check for error node in json
+                    if (!error) {
+                        JSONArray jArray = jObj.getJSONArray("user");
+                        //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
+                        ArrayList<msg> info= new ArrayList<msg>();
+                        // Extract data from json and store into ArrayList as class objects
+                        for (int i = 0; i < jArray.length(); i++) {
+                            msg dato = new msg();
+                            JSONObject part_data = jArray.getJSONObject(i);
+                            String id = part_data.getString("idMsj");
+                            String msg = part_data.getString("message");
+                            String fech = part_data.getString("fecha");
+                            String hr = part_data.getString("hora");
+                            String em = part_data.getString("emisor");
+                            String rec = part_data.getString("receptor");
+                            int fl = part_data.getInt("flag");
+                            String perfEm = perfil;
+                            //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                            dato.setId(id);
+                            dato.setMensaje(msg);
+                            dato.setFecha(fech);
+                            dato.setHora(hr);
+                            dato.setEmisor(em);
+                            dato.setReceptor(rec);
+                            dato.setFlag(fl);
+                            dato.setPerf(perfEm);
+                            //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
+                            info.add(dato);
+                            //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
+                        }
+                        Gson gson = new Gson();
+                        //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
+                        String datosJson = gson.toJson(info);
+                        //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(MenuPpal.this, listMessage.class);
+                        intent.putExtra("Datos",datosJson);
+                        intent.putExtra("nombre", name);
+                        intent.putExtra("username", username);
+                        intent.putExtra("perfil", perfil);
+                        MenuPpal.this.startActivity(intent);
+                        //finish();
+
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Mensaje Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("filtro", filtro);
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
     }
 
     private void buscarAlm() {
@@ -267,22 +387,18 @@ public class MenuPpal extends AppCompatActivity
         if (id == R.id.nav_principal) {
             fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
             //Toast.makeText(this, "Principal", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_cuenta) {
+        }else if (id == R.id.nav_cuenta) {
             //Perfil perfil = new Perfil();
             //fm.beginTransaction().replace(R.id.content_frame, perfil).commit();
-            Toast.makeText(this, "NO hablitado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "NO hablitado por el momento", Toast.LENGTH_SHORT).show();
         }else if (id == R.id.nav_partituras){
             String filtro = username;
             new AsyncFiltr().execute(filtro);
-        }
-        /*else if (id == R.id.nav_mensajes) {
+        }else if (id == R.id.nav_mensajes) {
             //Toast.makeText(this, "Lista de Mensaje", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(MenuPpal.this, message.class);
-            i.putExtra("name", name);
-            MenuPpal.this.startActivity(i);
-            finish();
-        }
-        */else if (id == R.id.nav_alumnos) {
+            String filtro = username;
+            buscarMsg(filtro);
+        }else if (id == R.id.nav_alumnos) {
             String filtro = username;
             new AsyncFiltro().execute(filtro);
             //Toast.makeText(this, "Lista de Alumnos", Toast.LENGTH_SHORT).show();
@@ -296,6 +412,10 @@ public class MenuPpal extends AppCompatActivity
         } else if (id == R.id.nav_info) {
             AcercaDe acerca = new AcercaDe();
             fm.beginTransaction().replace(R.id.content_frame, acerca).commit();
+        }else if(id == R.id.nav_upload){
+            //Upload upload = new Upload();
+            //fm.beginTransaction().replace(R.id.content_frame, upload).commit();
+            Toast.makeText(this, "NO hablitado por el momento", Toast.LENGTH_SHORT).show();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -306,6 +426,62 @@ public class MenuPpal extends AppCompatActivity
         EditText et = (EditText)findViewById(R.id.et);
         String filtro = et.getText().toString();
         new AsyncFilt().execute(filtro);
+    }
+
+    public void cargar (View view){
+        showFileChooser();
+    }
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("application/pdf");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Pdf"), PICK_PDF_REQUEST);
+    }
+    public void subir (View view){
+        uploadMultipart();
+    }
+    public void uploadMultipart() {
+        //getting name for the image
+        final String titul = tit.getText().toString();
+        final String compositor = comp.getText().toString();
+        final String instrumento = inst.getText().toString();
+        final String nArchivo = titul+"-"+compositor+"-"+instrumento+".pdf";
+
+        //getting the actual path of the image
+        String path = FilePath.getPath(this, filePath);
+
+        if (path == null) {
+            Toast.makeText(this, "POr favor, mueve tu archivo al almacenamiento interna y vuelve a intentar", Toast.LENGTH_LONG).show();
+        } else {
+            //Uploading code
+            try {
+                String uploadId = UUID.randomUUID().toString();
+
+                //Creating a multi part request
+                new MultipartUploadRequest(this, uploadId, URL_FOR_UPLOAD)
+                        .addFileToUpload(path, "pdf") //Adding file
+                        .addParameter("name", nArchivo) //Adding text parameter to the request
+                        .addParameter("titulo", titul)
+                        .addParameter("compositor",compositor)
+                        .addParameter("instrumento",instrumento)
+                        .setNotificationConfig(new UploadNotificationConfig())
+                        .setMaxRetries(2)
+                        .startUpload(); //Starting the upload
+
+            } catch (Exception exc) {
+                Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            cargaButton.setText("PDF seleccionado");
+        }
     }
 
     private class AsyncFilt extends AsyncTask<String, String, String>{
@@ -641,10 +817,12 @@ public class MenuPpal extends AppCompatActivity
                         String nameAl = part_data.getString("name");
                         String userAl = part_data.getString("username");
                         int imageAl = R.drawable.harry;
+                        String emisor = username;
                         //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                         dato.setName(nameAl);
                         dato.setUsername(userAl);
                         dato.setImage(imageAl);
+                        dato.setEmisor(emisor);
                         //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
                         info.add(dato);
                         //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
@@ -700,4 +878,29 @@ public class MenuPpal extends AppCompatActivity
             pDialog.dismiss();
     }
 
+    private void requestStoragePermission() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MenuPpal.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            //And finally ask for the permission
+        }else{
+            ActivityCompat.requestPermissions(MenuPpal.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        }
+    }
+
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        //Checking the request code of our request
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            //If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Displaying a toast
+                //Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+            } else {
+                //Displaying another toast if permission is not granted
+                Toast.makeText(this, "NO tienes permisos para acceder a la memoria", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

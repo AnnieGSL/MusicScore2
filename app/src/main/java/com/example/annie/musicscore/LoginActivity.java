@@ -82,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String username = mEmailView.getText().toString();
                 final String password = mPasswordView.getText().toString();
+                final String token = SharedPrefManager.getInstance(LoginActivity.this).getDeviceToken();
+
                 editor = sharedpreferences.edit();
 
                 // Tag used to cancel the request
@@ -90,6 +92,12 @@ public class LoginActivity extends AppCompatActivity {
                 pDialog.setMessage("Iniciando ...");
                 showDialog();
 
+                if (token == null) {
+                    hideDialog();
+                    Toast.makeText(LoginActivity.this, "Token no fue generado", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_LOGIN, new Response.Listener<String>() {
 
                     @Override
@@ -97,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Login Response: " + response.toString());
                         hideDialog();
 
+                        //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
                         try {
                             JSONObject jObj = new JSONObject(response);
                             boolean error = jObj.getBoolean("error");
@@ -147,6 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                         Map<String, String> params = new HashMap<String, String>();
                         params.put("username", username);
                         params.put("password", password);
+                        params.put("token", token);
                         return params;
                     }
                 };
@@ -162,6 +172,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), Registration.class);
                 startActivity(i);
+                finish();
             }
         });
     }

@@ -14,21 +14,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
- * Created by Annie on 14-07-2017.
+ * Created by Annie on 28-08-2017.
  */
 
-public class listaAlumnos extends AppCompatActivity {
-     /*Administra el activity que contiene la lista de busqueda*/
-
+public class listMessage extends AppCompatActivity {
     RecyclerView recyclerView;
-    listAdapter adapter;
+    msgAdapter adapter;
     String nombre, correo, info, perfil;
-    ArrayList<item> array = new ArrayList<>();
+    ArrayList<msg> array = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lista);
+        setContentView(R.layout.activity_msg);
 
         //Aquí se define la flecha para volver a la ventana principal
         ActionBar actionBar = getSupportActionBar();
@@ -42,16 +40,16 @@ public class listaAlumnos extends AppCompatActivity {
         nombre = bundle.getString("nombre");
         correo = bundle.getString("username");
         perfil = bundle.getString("perfil");
-        Type type = new TypeToken<ArrayList<item>>(){}.getType();
+        Type type = new TypeToken<ArrayList<msg>>(){}.getType();
         array = gson.fromJson(info, type);
         //Toast.makeText(listaAlumnos.this, "array"+array, Toast.LENGTH_LONG).show();
 
         //aqui se define el recyclerView del xml
-        recyclerView = (RecyclerView)findViewById(R.id.rvItema);
-        adapter = new listAdapter(listaAlumnos.this, array);
+        recyclerView = (RecyclerView)findViewById(R.id.rvItemi);
+        adapter = new msgAdapter(listMessage.this, array);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        recyclerView.setLayoutManager(new LinearLayoutManager(listaAlumnos.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(listMessage.this));
         recyclerView.setHasFixedSize(true);
     }
 
@@ -59,12 +57,6 @@ public class listaAlumnos extends AppCompatActivity {
         switch (itm.getItemId()){
             case android.R.id.home:
                 onBackPressed();
-                //Intent intent = new Intent(listaAlumnos.this, MenuPpal.class);
-                //intent.putExtra("nombre", nombre);
-                //intent.putExtra("correo", correo);
-                //intent.putExtra("perfil", perfil);
-                //listaAlumnos.this.startActivity(intent);
-                finish();
                 return true;
         }
         return super.onOptionsItemSelected(itm);

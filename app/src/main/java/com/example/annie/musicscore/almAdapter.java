@@ -66,12 +66,13 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
         myViewHolder.imageButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view)
             {
-                showPopUpMenu(myViewHolder.imageButton,position, pdfDoc.getUsername());
+                showPopUpMenu(myViewHolder.imageButton,position, pdfDoc.getUsername(), pdfDoc.getEmisor());
             }
         });
     }
 
-    private void showPopUpMenu(View view, final int position, final String username) {
+    private void showPopUpMenu(View view, final int position, final String username, final String emisor) {
+        //USERNAME ALUMNO
         PopupMenu popup = new PopupMenu(view.getContext(),view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.popup_alms,popup.getMenu());
@@ -92,8 +93,9 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
                     case R.id.msj:
                         Intent i = new Intent(context, message.class);
                         i.putExtra("username", username);
+                        i.putExtra("emisor", emisor);
                         context.startActivity(i);
-                        Toast.makeText(context,"Mensaje "+position,Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context,"Mensaje "+position,Toast.LENGTH_SHORT).show();
                         return true;
                 }
                 return false;
@@ -138,7 +140,6 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
             pdLoading.setCancelable(false);
             pdLoading.show();
         }
-
         @Override
         protected String doInBackground(String... params) {
             try {

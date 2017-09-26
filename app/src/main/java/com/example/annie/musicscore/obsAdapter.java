@@ -52,6 +52,7 @@ public class obsAdapter extends RecyclerView.Adapter<obsAdapter.MyViewHolder> {
         intent.putExtra("USER", user);
         intent.putExtra("OR", origen);
         this.context.startActivity(intent);
+        ((creaObservacion)context).finish();
     }
 
     @Override
