@@ -58,7 +58,7 @@ public class MenuPpal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private TextView titulo, notas, sol, silencio, acorde, penta, otro;
-    private String name, username, perfil, busq;
+    private String name, username, perfil, busq, a, b, c, d, e;
     private EditText tit, comp, inst;
     private Button cargaButton, subeButton;
 
@@ -424,7 +424,9 @@ public class MenuPpal extends AppCompatActivity
 
     public void buscar (View view) {
         EditText et = (EditText)findViewById(R.id.et);
-        String filtro = et.getText().toString();
+        String text = et.getText().toString();
+        String filtro = text;
+        //Toast.makeText(MenuPpal.this, "Filtro: "+filtro, Toast.LENGTH_SHORT).show();
         new AsyncFilt().execute(filtro);
     }
 
@@ -442,10 +444,14 @@ public class MenuPpal extends AppCompatActivity
     }
     public void uploadMultipart() {
         //getting name for the image
-        final String titul = tit.getText().toString();
-        final String compositor = comp.getText().toString();
-        final String instrumento = inst.getText().toString();
+        a =tit.getText().toString();
+        final String titul = a;
+        b = comp.getText().toString();
+        final String compositor = b;
+        c = inst.getText().toString();
+        final String instrumento =  c;
         final String nArchivo = titul+"-"+compositor+"-"+instrumento+".pdf";
+        Toast.makeText(this, "Nombre"+nArchivo, Toast.LENGTH_SHORT).show();
 
         //getting the actual path of the image
         String path = FilePath.getPath(this, filePath);
@@ -480,7 +486,8 @@ public class MenuPpal extends AppCompatActivity
 
         if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
-            cargaButton.setText("PDF seleccionado");
+            Toast.makeText(this, "Path"+ filePath, Toast.LENGTH_SHORT).show();
+            //cargaButton.setText("PDF seleccionado");
         }
     }
 
@@ -570,10 +577,10 @@ public class MenuPpal extends AppCompatActivity
                             Datos_url dato = new Datos_url();
                             JSONObject part_data = jArray.getJSONObject(i);
                             String name = part_data.getString("name");
-                            String url = part_data.getString("url");
+                            String url = part_data.getString("url")+".pdf";
                             String id = part_data.getString("id");
                             //MODIFICAR DATO SIMPLE PARA ENVIAR PERFIL A OTRA VENTANA
-                            //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MenuPpal.this, "id:"+id+"url"+url, Toast.LENGTH_LONG).show();
                             dato.setName(name);
                             dato.setUrl(url);
                             dato.setId(id);
@@ -695,7 +702,7 @@ public class MenuPpal extends AppCompatActivity
                         Datos_simple dato = new Datos_simple();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String name = part_data.getString("name");
-                        String url = part_data.getString("url");
+                        String url = part_data.getString("url")+".pdf";
                         String id = part_data.getString("id");
                         //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                         dato.setName(name);
@@ -811,12 +818,12 @@ public class MenuPpal extends AppCompatActivity
                     //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
                     ArrayList<Datos> info= new ArrayList<Datos>();
                     // Extract data from json and store into ArrayList as class objects
-                    for (int i = 0; i < jArray.length(); i++) {
+                    for (int i = jArray.length()-1; i >=0 ; i--) {
                         Datos dato = new Datos();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String nameAl = part_data.getString("name");
                         String userAl = part_data.getString("username");
-                        int imageAl = R.drawable.harry;
+                        int imageAl = R.drawable.ic_person_black_24dp;
                         String emisor = username;
                         //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                         dato.setName(nameAl);

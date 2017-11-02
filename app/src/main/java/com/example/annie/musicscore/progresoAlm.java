@@ -20,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,13 +33,15 @@ import java.util.Map;
  */
 
 public class progresoAlm extends AppCompatActivity {
-    private TextView fecha, hInicio, hFinal, cCompas, uCompas;
+    private TextView fecha, hInicio, hFinal, cCompas, uCompas, info, infonum;
     private EditText  cantidad;
     private int dia; private int mes; private int ano; private int horai; private int horaf; private int minutosi; private int minutosf; private int hi;
     private int mi;
     private int hf;
     private int mf; private int min; private int hr;
+    private String progreso;
     private static final String URL_FOR_INSERT = "http://musictesis.esy.es/progreso.php";
+    private static final String URL_FOR_PROGRESO = "http://musictesis.esy.es/getProg.php";
     private static final String TAG = "Progreso";
     private String id, correo;
     ProgressDialog pDialog;
@@ -53,11 +56,16 @@ public class progresoAlm extends AppCompatActivity {
 
         cantidad = (EditText)findViewById(R.id.etCant);
         cCompas = (TextView)findViewById(R.id.cant);
-        fecha = (TextView) findViewById(R.id.etFecha);
+        fecha = (TextView)findViewById(R.id.etFecha);
+        hInicio = (TextView) findViewById(R.id.ethi);
+        hFinal = (TextView) findViewById(R.id.ethf);
+        info = (TextView)findViewById(R.id.info);
+        infonum = (TextView)findViewById(R.id.infonum);
 
         Intent intent=this.getIntent();
-        id = intent.getExtras().getString("id");
+        id = intent.getExtras().getString("id");// id de partitura
         correo = intent.getExtras().getString("user");
+        buscarProg(id, correo);
     }
     public void fecha (View view){
         final Calendar c = Calendar.getInstance();
@@ -77,7 +85,6 @@ public class progresoAlm extends AppCompatActivity {
         datePickerDialog.show();
     }
     public void inicio (View view){
-        hInicio = (TextView) findViewById(R.id.ethi);
         final Calendar c = Calendar.getInstance();
         horai = c.get(Calendar.HOUR_OF_DAY);
         minutosi = c.get(Calendar.MINUTE);
@@ -109,7 +116,6 @@ public class progresoAlm extends AppCompatActivity {
 
     }
     public void fin (View view){
-        hFinal = (TextView) findViewById(R.id.ethf);
         final Calendar c = Calendar.getInstance();
         horaf = c.get(Calendar.HOUR_OF_DAY);
         minutosf = c.get(Calendar.MINUTE);
@@ -162,8 +168,13 @@ public class progresoAlm extends AppCompatActivity {
         hr = hr * 60;
         min = min + hr;
         String mn = ""+min+"";
-        Toast.makeText(getApplicationContext(), "minutos: "+min, Toast.LENGTH_LONG).show();
-        String f = ano+"-"+(mes+1)+"-"+dia;
+        String f;
+        //Toast.makeText(getApplicationContext(), "minutos: "+min, Toast.LENGTH_LONG).show();
+        if(ano == 0 & mes == 0 & dia ==0){
+            f = "";
+        }else{
+            f = ano+"-"+(mes+1)+"-"+dia;
+        }
         addProgres(f.toString(), hInicio.getText().toString()+":00", hFinal.getText().toString()+":00", mn.toString(), cantidad.getText().toString());
     }
 
@@ -221,6 +232,74 @@ public class progresoAlm extends AppCompatActivity {
                 params.put("id", id);
                 params.put("correo", correo);
                 params.put("min",m);
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
+    }
+
+    private void buscarProg(final String idb, final String correob) {
+        String cancel_req_tag = "Mensajes";
+        pDialog.setMessage("Cargando...");
+        showDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_PROGRESO, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Busca Response: " + response.toString());
+                hideDialog();
+                //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    //Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
+                    // Check for error node in json
+                    if (!error) {
+                        JSONArray jArray = jObj.getJSONArray("user");
+                        //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
+                        // Extract data from json and store into ArrayList as class objects
+                        for (int i = jArray.length()-1; i >=0 ; i--) {
+                            JSONObject part_data = jArray.getJSONObject(i);
+                            progreso = part_data.getString("compases");
+                            //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
+                        }
+                        infonum.setText(progreso);
+                        //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                        //finish();
+
+                    } else {
+                        // Error in login. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Mensaje Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("id", idb);
+                params.put("correo", correob);
                 return params;
             }
         };

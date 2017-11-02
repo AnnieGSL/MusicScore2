@@ -154,7 +154,7 @@ public class message extends AppCompatActivity {
             public void onResponse(String response) {
                 Log.d(TAG, "Obs Response: " + response.toString());
                 hideDialog();
-                Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");

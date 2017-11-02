@@ -318,9 +318,8 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
         protected void onPostExecute(String sb) {
             pdLoading.dismiss();
 
-            //CREAR PHPH WQUE LEA Y CARGUE PROGRESOS ( fecha, minutos)
             try{
-                //Toast.makeText(MenuPpal.this, "sb:"+sb, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, "sb:"+sb, Toast.LENGTH_LONG).show();
                 JSONObject jObj = new JSONObject(sb);
                 boolean error = jObj.getBoolean("error");
 
@@ -329,14 +328,18 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
                     //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
                     ArrayList<Datos_prg> info= new ArrayList<Datos_prg>();
                     // Extract data from json and store into ArrayList as class objects
-                    for (int i = 0; i < jArray.length(); i++) {
+                    for (int i = jArray.length()-1; i >=0 ; i--) {
                         Datos_prg dato = new Datos_prg();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String fecha = part_data.getString("fecha");
                         int min = part_data.getInt("tiempo");
+                        int pag = part_data.getInt("pagina");
+                        int id = part_data.getInt("idScore");
                         //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                         dato.setFecha(fecha);
                         dato.setMin(min);
+                        dato.setPag(pag);
+                        dato.setId(id);
                         //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
                         info.add(dato);
                         //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
@@ -344,7 +347,7 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
                     Gson gson = new Gson();
                     //Toast.makeText(MenuPpal.this, "infoFinal: "+info, Toast.LENGTH_LONG).show();
                     String datosJson = gson.toJson(info);
-                    //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, "gson: "+datosJson, Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, graphPrg.class);
                     intent.putExtra("Datos",datosJson);
                     context.startActivity(intent);

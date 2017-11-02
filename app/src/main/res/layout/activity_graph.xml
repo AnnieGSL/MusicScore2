@@ -9,9 +9,57 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.annie.musicscore.graphPrg">
 
-    <com.github.mikephil.charting.charts.LineChart
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/bargraph">
-    </com.github.mikephil.charting.charts.LineChart>
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titGraph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="8dp"
+            android:ems="12"
+            android:textAlignment="center"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:typeface="serif" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bargraph"
+            android:layout_weight="1"
+            android:layout_marginTop="12dp">
+        </com.github.mikephil.charting.charts.LineChart>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/tvPag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:textSize="18dp"
+                android:typeface="serif" />
+
+            <TextView
+                android:id="@+id/etPag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:ems="10"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:typeface="monospace" />
+
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

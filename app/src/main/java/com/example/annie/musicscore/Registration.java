@@ -110,7 +110,7 @@ public class Registration extends AppCompatActivity {
 
                     if (!error) {
                         String user = jObj.getJSONObject("user").getString("name");
-                        Toast.makeText(getApplicationContext(), "Hi " + user +", You are successfully Added!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Hola " + user +", haz sido registrado con éxito", Toast.LENGTH_SHORT).show();
 
                         // Launch login activity
                         Intent intent = new Intent(Registration.this, LoginActivity.class);

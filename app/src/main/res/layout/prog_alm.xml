@@ -6,18 +6,55 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/background_light">
+        android:background="@android:color/background_light"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                >
+
+                <TextView
+                    android:id="@+id/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:text="Página o compás anterior: "
+                    android:textSize="22sp"
+                    android:textStyle="bold|italic"
+                    android:typeface="serif" />
+
+                <TextView
+                    android:id="@+id/infonum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:textAlignment="center"
+                    android:ems="10"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:typeface="monospace" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/bFecha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="fecha"
-                android:text="Fecha"
+                android:text="Agregar Fecha"
                 android:textColor="@android:color/white"
                 android:textColorLink="?android:attr/textColorPrimary"
                 android:textSize="18sp"
@@ -25,18 +62,25 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="10dp"/>
+
             <TextView
+                android:id="@+id/etFecha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="10dp"
                 android:ems="10"
-                android:id="@+id/etFecha" />
+                android:text="Selecciona en botón."
+                android:textSize="18sp"
+                android:textStyle="italic" />
 
             <Button
                 android:id="@+id/bHorai"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="inicio"
-                android:text="Hora inicio"
+                android:text="Agregar Hora inicio"
                 android:textColor="@android:color/white"
                 android:textColorLink="?android:attr/textColorPrimary"
                 android:textSize="18sp"
@@ -44,18 +88,25 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="10dp"/>
+
             <TextView
+                android:id="@+id/ethi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="10dp"
                 android:ems="10"
-                android:id="@+id/ethi" />
+                android:text="Selecciona en botón."
+                android:textSize="18sp"
+                android:textStyle="italic" />
 
             <Button
                 android:id="@+id/bHoraf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="fin"
-                android:text="Hora fin"
+                android:text="Agregar Hora fin"
                 android:textColor="@android:color/white"
                 android:textColorLink="?android:attr/textColorPrimary"
                 android:textSize="18sp"
@@ -63,26 +114,39 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="10dp"/>
+
             <TextView
+                android:id="@+id/ethf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="time"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="10dp"
                 android:ems="10"
-                android:id="@+id/ethf" />
+                android:inputType="time"
+                android:text="Selecciona en botón."
+                android:textSize="18sp"
+                android:textStyle="italic" />
 
             <TextView
                 android:id="@+id/cant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cantidad compases aprendidos: "
+                android:text="Página o compás actual: "
                 android:layout_gravity="start"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="30dp"/>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
+                android:textSize="18sp"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:id="@+id/etCant" />
 
             <Button
