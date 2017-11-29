@@ -68,8 +68,7 @@ public class MenuPpal extends AppCompatActivity
     private Uri filePath;
 
     private static final String TAG = "PRINCIPAL";
-    private static String URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
-    private static final String URL_FOR_FILTRo = "http://musictesis.esy.es/getAl.php";
+    private static String URL_FOR_FILTRO;
     private static final String URL_FOR_PART = "http://musictesis.esy.es/getPdfs(json).php";
     private static final String URL_FOR_ALMNOS ="http://musictesis.esy.es/getAlmn.php";
     private static final String URL_FOR_BUSCAR = "http://musictesis.esy.es/getAlm.php";
@@ -423,6 +422,7 @@ public class MenuPpal extends AppCompatActivity
     }
 
     public void buscar (View view) {
+        URL_FOR_FILTRO = "http://musictesis.esy.es/getPdfs.php";
         EditText et = (EditText)findViewById(R.id.et);
         String text = et.getText().toString();
         String filtro = text;
@@ -858,19 +858,16 @@ public class MenuPpal extends AppCompatActivity
 
     public void piano (View view) {
         URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
-        EditText et = (EditText)findViewById(R.id.et);
         String filtro = "Piano";
         new AsyncFilt().execute(filtro);
     }
     public void guitarra (View view) {
         URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
-        EditText et = (EditText)findViewById(R.id.et);
         String filtro = "Guitarra";
         new AsyncFilt().execute(filtro);
     }
     public void violin (View view) {
         URL_FOR_FILTRO = "http://musictesis.esy.es/getAl.php";
-        EditText et = (EditText)findViewById(R.id.et);
         String filtro = "Violin";
         new AsyncFilt().execute(filtro);
     }
