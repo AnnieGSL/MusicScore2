@@ -14,44 +14,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <LinearLayout
+
+            <ImageView
+                android:id="@+id/imageView2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    app:srcCompat="@mipmap/ic_launcher"
-                    android:id="@+id/imageView2"
-                    android:layout_gravity="center"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/TextView7"
-                        android:text="Cambiar imagen"
-                        android:layout_weight="1"
-                        android:layout_marginStart="20dp"
-                        android:textSize="14sp"
-                        android:textStyle="normal|bold"
-                        android:gravity="center_vertical"/>
-                    <Button
-                        android:text="Seleccionar Imagen"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/button3"
-                        android:textSize="14sp"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/white"
-                        android:textColorLink="?android:attr/textColorPrimary"
-                        android:background="@color/colorPrimary"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                app:srcCompat="@mipmap/ic_launcher" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -73,6 +43,25 @@
                     android:id="@+id/editText"
                     android:hint= "Ej: Juanito Perez"
                     android:layout_weight="1"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/buttonN"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/colorPrimary"
+                    android:onClick="nombrenew"
+                    android:text="Cambiar Nombre"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="?android:attr/textColorPrimary"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -102,23 +91,21 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp">
-                <TextView
-                    android:text="Usuario"
+
+                <Button
+                    android:id="@+id/buttonE"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/textView4"
-                    android:textSize="14sp"
-                    android:layout_weight="2"
-                    android:textStyle="normal|bold"
-                    android:gravity="center_vertical"/>
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textPersonName"
-                    android:id="@+id/editText6"
-                    android:hint= "Ej: JuanP"
-                    android:layout_weight="1"/>
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/colorPrimary"
+                    android:onClick="edadnew"
+                    android:text="Cambiar Edad"
+                    android:textColor="@android:color/white"
+                    android:textColorLink="?android:attr/textColorPrimary"
+                    android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -133,6 +120,7 @@
                     android:layout_weight="2"
                     android:textStyle="normal|bold"
                     android:gravity="center_vertical"/>
+
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -145,47 +133,40 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp">
+
                 <Button
-                    android:text="Cambiar Contraseña"
+                    android:id="@+id/button2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/button2"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@color/colorPrimary"
+                    android:onClick="passnew"
+                    android:text="Cambiar Contraseña"
                     android:textColor="@android:color/white"
                     android:textColorLink="?android:attr/textColorPrimary"
-                    android:textSize="14sp"
-                    android:background="@color/colorPrimary"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:textSize="14sp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp">
+
                 <Button
-                    android:text="Guardar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
                     android:id="@+id/button5"
-                    android:layout_weight="1"
-                    android:textColor="@android:color/white"
-                    android:textColorLink="?android:attr/textColorPrimary"
-                    android:textSize="14sp"
-                    android:background="@color/colorPrimary"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
-                <Button
-                    android:text="Eliminar Cuenta"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/button4"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:layout_weight="1"
+                    android:background="@color/colorPrimary"
+                    android:onClick="finalizar"
+                    android:text="Finalizar"
                     android:textColor="@android:color/white"
                     android:textColorLink="?android:attr/textColorPrimary"
-                    android:textSize="14sp"
-                    android:background="@color/colorPrimary"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:textSize="14sp" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

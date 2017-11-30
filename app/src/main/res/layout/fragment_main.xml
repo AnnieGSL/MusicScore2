@@ -129,6 +129,7 @@
                             android:id="@+id/ib1"
                             android:background="@android:color/background_light"
                             android:layout_weight="1"
+                            android:onClick="notas"
                             />
                         <TextView
                             android:text="Notas y más"

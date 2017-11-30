@@ -48,6 +48,7 @@
         <activity android:name=".message"/>
         <activity android:name=".VistaMensaje"></activity>
         <activity android:name=".listMessage"></activity>
+        <activity android:name=".notas"></activity>
 
 
         <service

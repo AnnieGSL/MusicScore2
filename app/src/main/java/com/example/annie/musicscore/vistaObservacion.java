@@ -85,8 +85,12 @@ public class vistaObservacion extends AppCompatActivity {
         switch (itm.getItemId()) {
             case android.R.id.home:
                 //onBackPressed();
-                String filtro = username;
-                new AsyncFilt().execute(filtro);
+                if(origen.equalsIgnoreCase("Lista")){
+                    String filtro = username;
+                    new AsyncFilt().execute(filtro);
+                }else{
+                    onBackPressed();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(itm);

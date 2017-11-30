@@ -60,7 +60,7 @@ public class msgAdapter extends RecyclerView.Adapter<msgAdapter.MyViewHolder> {
             myViewHolder.textView3.setText(pdfDoc.getHora());
             myViewHolder.setItemClickListener(new msgAdapter.ItemClickListener() {
                 public void onItemClick(int pos) {
-                    openMSG(pdfDoc.getMensaje(), pdfDoc.getReceptor(), pdfDoc.getEmisor(), pdfDoc.getId());
+                    openMSG(pdfDoc.getMensaje(), pdfDoc.getReceptor(), pdfDoc.getEmisor(), pdfDoc.getId(), pdfDoc.getNameReceptor(), pdfDoc.getPerf());
                 }
             });
         }else {
@@ -69,7 +69,7 @@ public class msgAdapter extends RecyclerView.Adapter<msgAdapter.MyViewHolder> {
             myViewHolder.textView3.setText(pdfDoc.getHora());
             myViewHolder.setItemClickListener(new msgAdapter.ItemClickListener() {
                 public void onItemClick(int pos) {
-                    openMSG(pdfDoc.getMensaje(), pdfDoc.getReceptor(), pdfDoc.getEmisor(), pdfDoc.getId());
+                    openMSG(pdfDoc.getMensaje(), pdfDoc.getReceptor(), pdfDoc.getEmisor(), pdfDoc.getId(), pdfDoc.getNameReceptor(), pdfDoc.getPerf());
                 }
             });
         }
@@ -134,7 +134,7 @@ public class msgAdapter extends RecyclerView.Adapter<msgAdapter.MyViewHolder> {
 
     }
 
-    private void openMSG(String mensaje, String receptor, String emisor, String id) {
+    private void openMSG(String mensaje, String receptor, String emisor, String id, String name, String p) {
         marcarLeido(id);
         String fuente = "lista";
         Intent intent = new Intent(this.context, VistaMensaje.class);
@@ -142,6 +142,8 @@ public class msgAdapter extends RecyclerView.Adapter<msgAdapter.MyViewHolder> {
         intent.putExtra("username",receptor);
         intent.putExtra("emisor", emisor);
         intent.putExtra("fuente", fuente);
+        intent.putExtra("name",name);
+        intent.putExtra("perfil", p);
         this.context.startActivity(intent);
         ((listMessage)context).finish();
 

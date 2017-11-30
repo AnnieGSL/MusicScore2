@@ -1,5 +1,6 @@
 package com.example.annie.musicscore;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +43,7 @@ public class listMessage extends AppCompatActivity {
         perfil = bundle.getString("perfil");
         Type type = new TypeToken<ArrayList<msg>>(){}.getType();
         array = gson.fromJson(info, type);
-        //Toast.makeText(listaAlumnos.this, "array"+array, Toast.LENGTH_LONG).show();
+        //Toast.makeText(listMessage.this, "perfil"+perfil, Toast.LENGTH_LONG).show();
 
         //aqui se define el recyclerView del xml
         recyclerView = (RecyclerView)findViewById(R.id.rvItemi);
@@ -56,7 +57,13 @@ public class listMessage extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem itm){
         switch (itm.getItemId()){
             case android.R.id.home:
-                onBackPressed();
+                //onBackPressed();
+                Intent intent = new Intent(listMessage.this, MenuPpal.class);
+                intent.putExtra("nombre", nombre);
+                intent.putExtra("correo", correo);
+                intent.putExtra("perfil", perfil);
+                listMessage.this.startActivity(intent);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(itm);

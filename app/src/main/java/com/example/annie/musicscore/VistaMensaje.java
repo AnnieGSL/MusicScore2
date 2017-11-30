@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class VistaMensaje extends AppCompatActivity {
     TextView msg;
-    String mensaje, emisor, receptor, fuente;
+    String mensaje, emisor, receptor, fuente, name, p;
     private static final String URL_FOR_MENSAJE = "http://musictesis.esy.es/getMsg.php";
     private static final String TAG = "MENSAJE";
 
@@ -56,6 +56,8 @@ public class VistaMensaje extends AppCompatActivity {
         emisor = intent.getExtras().getString("emisor");
         receptor = intent.getExtras().getString("username");
         fuente = intent.getExtras().getString("fuente");
+        name = intent.getExtras().getString("name");
+        p = intent.getExtras().getString("perfil");
 
         msg = (TextView)findViewById(R.id.msj);
 
@@ -115,6 +117,8 @@ public class VistaMensaje extends AppCompatActivity {
                             String em = part_data.getString("emisor");
                             String rec = part_data.getString("receptor");
                             int fl = part_data.getInt("flag");
+                            String nRec = name;
+                            String pl = p;
                             //Toast.makeText(MenuPpal.this, "id:"+id, Toast.LENGTH_LONG).show();
                             dato.setId(id);
                             dato.setMensaje(msg);
@@ -123,6 +127,8 @@ public class VistaMensaje extends AppCompatActivity {
                             dato.setEmisor(em);
                             dato.setReceptor(rec);
                             dato.setFlag(fl);
+                            dato.setNameReceptor(nRec);
+                            dato.setPerf(pl);
                             //Toast.makeText(MenuPpal.this, "dato: "+dato, Toast.LENGTH_LONG).show();
                             info.add(dato);
                             //Toast.makeText(MenuPpal.this, "info: "+info, Toast.LENGTH_LONG).show();
@@ -133,9 +139,9 @@ public class VistaMensaje extends AppCompatActivity {
                         //Toast.makeText(MenuPpal.this, "gson: "+datosJson, Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(VistaMensaje.this, listMessage.class);
                         intent.putExtra("Datos",datosJson);
-                        //intent.putExtra("nombre", name);
-                        //intent.putExtra("username", username);
-                        //intent.putExtra("perfil", perfil);
+                        intent.putExtra("nombre", name);
+                        intent.putExtra("username", receptor);
+                        intent.putExtra("perfil", p);
                         VistaMensaje.this.startActivity(intent);
                         finish();
 

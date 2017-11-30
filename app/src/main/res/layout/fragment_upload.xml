@@ -24,7 +24,7 @@
             android:weightSum="1">
 
             <Button
-                android:id="@+id/cargar_pdf_button"
+                android:id="@+id/cargarpdf"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/subir_pdf_button"
+                android:id="@+id/subirpdf"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

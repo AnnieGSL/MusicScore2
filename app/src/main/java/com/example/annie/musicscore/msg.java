@@ -5,7 +5,7 @@ package com.example.annie.musicscore;
  */
 
 public class msg {
-    String id, mensaje, fecha, hora, emisor, receptor, perfil;
+    String id, mensaje, fecha, hora, emisor, receptor, perfil, name;
     int flag;
 
     public String getId() {return  id;}
@@ -32,6 +32,8 @@ public class msg {
     }
     public String getReceptor(){return receptor;}
     public void setReceptor(String receptor){this.receptor = receptor;}
+    public String getNameReceptor(){return name;}
+    public void setNameReceptor(String name){this.name =name;}
     public int getFlag(){return flag;}
     public void setFlag(int flag){this.flag = flag;}
     public String getPerf(){return perfil;}
