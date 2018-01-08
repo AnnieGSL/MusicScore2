@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -32,15 +33,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 
-import net.gotev.uploadservice.MultipartUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
-
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,13 +53,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class MenuPpal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private TextView titulo, notas, sol, silencio, acorde, penta, otro;
-    private String name, username, perfil, busq, a, b, c, d, e, path;
+    private String name, username, perfil, busq, a, b, c, d, e, path, str, pdf;
     private EditText tit, comp, inst;
 
     public static final String  URL_FOR_UPLOAD = "http://musictesis.esy.es/upload.php";
@@ -431,13 +431,15 @@ public class MenuPpal extends AppCompatActivity
         showFileChooser();
     }
     private void showFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("application/pdf");
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+        //Toast.makeText(this, "File:"+ file, Toast.LENGTH_SHORT).show();//storage/emulated/0
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(String.valueOf(file)),"application/pdf");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Pdf"), PICK_PDF_REQUEST);
     }
 
-    public void subir (View view){
+    public void subir (View view) throws IOException {
         //Toast.makeText(this, "titulo"+tit.getText().toString(), Toast.LENGTH_SHORT).show();
         uploadMultipart();
     }
@@ -448,60 +450,153 @@ public class MenuPpal extends AppCompatActivity
 
         if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
+            //Log.d("pdf", filePath);
+            Log.d("pdf", data.getDataString());
+            Log.d("pdf", data.getData().getEncodedPath());
             Button cargaButon = (Button)findViewById(R.id.cargarpdf);
-            //Toast.makeText(this, "Path"+ filePath, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Path:"+ filePath, Toast.LENGTH_SHORT).show();//com.android.exterbakstorage.documents/document/primay%3ADownload%2Fcupon_casilla.pdf
             cargaButon.setText("PDF seleccionado");
         }
     }
 
-    public void uploadMultipart() {
+    public void uploadMultipart() throws IOException {
         tit = (EditText)findViewById(R.id.etTit);
         comp = (EditText)findViewById(R.id.etComp);
         inst = (EditText)findViewById(R.id.etIns);
-        //getting name for the image
         a =tit.getText().toString().trim();
         final String titul = a;
         b = comp.getText().toString().trim();
         final String compositor = b;
         c = inst.getText().toString().trim();
         final String instrumento =  c;
-        final String nArchivo = titul+"-"+compositor+"-"+instrumento;
-        //Toast.makeText(this, "Nombre"+nArchivo, Toast.LENGTH_SHORT).show();
-
-
-        //getting the actual path of the image
-        path = FilePath.getPath(this, filePath);
-        //Toast.makeText(this, "Path"+ path, Toast.LENGTH_SHORT).show();
-
+        final String nm = titul+"-"+compositor;
+        if(filePath!=null) {
+            path = FilePath.getPath(this, filePath);
+            pdf = pdftostring(path);
+            //Toast.makeText(this,"pdfSTR:"+pdf , Toast.LENGTH_SHORT).show();
+            Log.d("path", path);
+        }else {
+            Toast.makeText(this,"Cargue el archivo" , Toast.LENGTH_SHORT).show();
+        }
         if (path == null) {
-            Toast.makeText(this, "POr favor, mueve tu archivo al almacenamiento interno y vuelve a intentar", Toast.LENGTH_LONG).show();
-        } else {
-            //Uploading code
+            Toast.makeText(this, "o por favor, mueve tu archivo al almacenamiento interno y vuelve a intentar", Toast.LENGTH_LONG).show();
+        }else {
             try {
+                String cancel_req_tag = "Upload";
+                pDialog.setMessage("Cargando...");
+                showDialog();
+                StringRequest strReq = new StringRequest(Request.Method.POST, URL_FOR_UPLOAD, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "upl Response: " + response.toString());
+                        hideDialog();
+                        //Toast.makeText(getApplicationContext(), "response: "+response, Toast.LENGTH_LONG).show();
+                        try {
+                            JSONObject jObj = new JSONObject(response);
+                            boolean error = jObj.getBoolean("error");
+                            if(!error){
+                                String msg = jObj.getString("msg");
+                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                FragmentManager fm = getSupportFragmentManager();
+                                fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
+                            }else {
+                                // Error in login. Get the error message
+                                String errorMsg = jObj.getString("error_msg");
+                                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            // JSON error
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
 
-                String uploadId = UUID.randomUUID().toString();
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "Update Error: " + error.getMessage());
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        hideDialog();
+                    }
+                }) {
 
-                //Creating a multi part request
-                new MultipartUploadRequest(this, uploadId, URL_FOR_UPLOAD)
-                        .addFileToUpload(path, "pdf") //Adding file
-                        .addParameter("name", nArchivo) //Adding text parameter to the request
-                        .addParameter("titulo", titul)
-                        .addParameter("compositor",compositor)
-                        .addParameter("instrumento",instrumento)
-                        .setNotificationConfig(new UploadNotificationConfig())
-                        .setMaxRetries(5)
-                        .startUpload(); //Starting the upload
-
-                Toast.makeText(this, "Partitura subida con éxito", Toast.LENGTH_SHORT).show();
+                    @Override
+                    protected Map<String, String> getParams() {
+                        // Posting parameters to login url
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("titulo", titul);
+                        params.put("compositor", compositor);
+                        params.put("instrumento", instrumento);
+                        params.put("pdf", pdf);
+                        params.put("name", nm);
+                        return params;
+                    }
+                };
+                // Adding request to request queue
+                AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, cancel_req_tag);
             } catch (Exception exc) {
+                exc.printStackTrace();
                 Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
-
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction().replace(R.id.content_frame, new main()).commit();
-
     }
+
+
+    private String pdftostring(String npath) throws IOException {
+        File file = new File(String.valueOf(npath));
+        if (file.exists()) {
+            byte[] bytes = loadFile(file);
+            /*
+            int size = (int) file.length();
+            byte[] bytes = new byte[size];
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            byte[] encoded = Base64.encodeBase64(bytes);
+            str =  new String(encoded);
+            Log.d("str","data:application/pdf;base64,"+str);
+            */
+            byte[] encoded = Base64.encodeBase64(bytes);
+            str =  new String(encoded);
+            Log.d("str","data:application/pdf;base64,"+str);
+        } else {
+            Log.d("pdf","not found");
+        }
+        return str;
+    }
+
+    private static byte[] loadFile(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+
+        long length = file.length();
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+        }
+        byte[] bytes = new byte[(int)length];
+
+        int offset = 0;
+        int numRead = 0;
+        while (offset < bytes.length
+                && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+            offset += numRead;
+        }
+
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file "+file.getName());
+        }
+
+        is.close();
+        return bytes;
+    }
+
     private void requestStoragePermission() {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(MenuPpal.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -856,7 +951,8 @@ public class MenuPpal extends AppCompatActivity
                     //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
                     ArrayList<Datos> info= new ArrayList<Datos>();
                     // Extract data from json and store into ArrayList as class objects
-                    for (int i = jArray.length()-1; i >=0 ; i--) {
+                    //for (int i = jArray.length()-1; i >=0 ; i--) {
+                    for (int i=0; i<jArray.length();i++){
                         Datos dato = new Datos();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String nameAl = part_data.getString("name");
@@ -1008,6 +1104,7 @@ public class MenuPpal extends AppCompatActivity
         i.putExtra("username", username);
         i.putExtra("perfil", perfil);
         MenuPpal.this.startActivity(i);
+        finish();
     }
 
     private void showDialog() {

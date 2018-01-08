@@ -328,7 +328,8 @@ public class almAdapter extends RecyclerView.Adapter<almAdapter.MyViewHolder> {
                     //Toast.makeText(MenuPpal.this, "jArray"+jArray, Toast.LENGTH_LONG).show();
                     ArrayList<Datos_prg> info= new ArrayList<Datos_prg>();
                     // Extract data from json and store into ArrayList as class objects
-                    for (int i = jArray.length()-1; i >=0 ; i--) {
+                    //for (int i = jArray.length()-1; i >=0 ; i--) {
+                    for (int i = 0; i<jArray.length(); i++){
                         Datos_prg dato = new Datos_prg();
                         JSONObject part_data = jArray.getJSONObject(i);
                         String fecha = part_data.getString("fecha");

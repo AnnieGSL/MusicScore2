@@ -158,7 +158,7 @@ public class message extends AppCompatActivity {
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
-                    //Toast.makeText(getApplicationContext(), "jObj: "+jObj, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "try: "+jObj, Toast.LENGTH_LONG).show();
                     // Check for error node in json
                     if (!error) {
                         //Toast.makeText(getApplicationContext(), "try: "+ response, Toast.LENGTH_SHORT).show();
@@ -170,7 +170,7 @@ public class message extends AppCompatActivity {
                 } catch (JSONException e) {
                     // JSON error
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Json error notif: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {
