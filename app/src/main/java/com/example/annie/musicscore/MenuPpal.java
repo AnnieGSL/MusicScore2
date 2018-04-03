@@ -450,7 +450,7 @@ public class MenuPpal extends AppCompatActivity
 
         if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
-            //Log.d("pdf", filePath);
+            Log.d("pdf", String.valueOf(filePath));
             Log.d("pdf", data.getDataString());
             Log.d("pdf", data.getData().getEncodedPath());
             Button cargaButon = (Button)findViewById(R.id.cargarpdf);
@@ -470,6 +470,7 @@ public class MenuPpal extends AppCompatActivity
         c = inst.getText().toString().trim();
         final String instrumento =  c;
         final String nm = titul+"-"+compositor;
+        //Toast.makeText(this,titul+compositor+instrumento+nm , Toast.LENGTH_SHORT).show();
         if(filePath!=null) {
             path = FilePath.getPath(this, filePath);
             pdf = pdftostring(path);
@@ -540,7 +541,6 @@ public class MenuPpal extends AppCompatActivity
             }
         }
     }
-
 
     private String pdftostring(String npath) throws IOException {
         File file = new File(String.valueOf(npath));
@@ -622,7 +622,6 @@ public class MenuPpal extends AppCompatActivity
             }
         }
     }
-
 
     private class AsyncFilt extends AsyncTask<String, String, String>{
         ProgressDialog pdLoading = new ProgressDialog(MenuPpal.this);

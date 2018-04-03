@@ -201,6 +201,7 @@ public class VistaPartitura extends AppCompatActivity {
 
     private void descargar(String path){
         downloadManager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+        Toast.makeText(this, "uri pdf: "+path, Toast.LENGTH_SHORT).show();
         Uri uri = Uri.parse(path);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
